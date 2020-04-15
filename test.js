@@ -17,6 +17,8 @@ class test extends Phaser.Scene {
 		this.load.image('2vie', 'assetsProto/2vie.png');
 		this.load.image('1vie', 'assetsProto/1vie.png');
 
+		this.load.image('bullet','assetsProto/gray.png');
+
 		this.load.image('money','assetsProto/gold.png');
 	}
 
@@ -55,7 +57,7 @@ class test extends Phaser.Scene {
 		    	{
 		    		if (this.ammo > 0) 
 			    	{
-			    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet');
+			    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet').setScale(0.5);
 			    		bullet.setVelocity(pointer.x, pointer.y); 
 				        this.physics.moveToObject(bullet, pointer, 400);
 				        this.ammo--;
@@ -71,6 +73,8 @@ class test extends Phaser.Scene {
 
 		this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
 
+		this.gizmos = this.physics.add.group();
+
 		//IA
 			//EnnemiA
 			this.ennemiA = this.physics.add.group({
@@ -80,11 +84,12 @@ class test extends Phaser.Scene {
 		    });
 		    
 		    this.ennemiA.children.iterate(function (ennemiA) {
-		        ennemiA.health = Phaser.Math.Between(2, 5);
+		        ennemiA.health = Phaser.Math.Between(2, 5);			        
 		    });
 
+			this.bulletEvent = this.time.addEvent({ delay: 2500, callback: shootPlayer, callbackScope: this, loop: true });
 		    this.ennemiABullets = this.physics.add.group();
-		    this.bulletEvent = this.time.addEvent({ delay: 2500, callback: shootPlayer, callbackScope: this, loop: true });
+		    
 
 		//Collectibles
 		    this.nGold = 0;
@@ -138,8 +143,11 @@ class test extends Phaser.Scene {
 
 			function shootPlayer(ennemiA)
 			{
-				var bullet = this.ennemiABullets.create(this.ennemiA.x, this.ennemiA.y, 'bullet');
-		        this.physics.moveToObject(bullet, this.player, 300);
+				if (this.ennemiA.countActive(true) != 0) 
+				{
+		       		var bullet = this.ennemiABullets.create(this.ennemiA.x, this.ennemiA.y, 'bullet').setScale(0.5);
+		        	this.physics.moveToObject(bullet, this.player, 300);
+				}
 			}
 
 			function destroyFarObject()
@@ -183,6 +191,9 @@ class test extends Phaser.Scene {
 			{
 				this.player.setVelocityY(0);
 			}
+
+		//Déplacemet des ennemis
+		
 
 		//Rechargement
 			if(this.keys.R.isDown)
