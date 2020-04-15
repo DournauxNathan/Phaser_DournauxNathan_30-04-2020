@@ -20,13 +20,11 @@ class test extends Phaser.Scene {
 		this.load.image('bullet','assetsProto/gray.png');
 
 		this.load.image('money','assetsProto/gold.png');
+
+		this.load.image('fluffy','assetsProto/fluffy.png');
 	}
 
 	create() {
-		
-
-
-		this.add.image(0,0,'background').setOrigin(0,0);
 
 	    this.physics.world.setBounds(0, 0, 1024*2.25, 768);
 
@@ -97,6 +95,13 @@ class test extends Phaser.Scene {
 		    this.nAmmo;
 			this.ammo = 6;
 
+			this.fluffyWhim = this.physics.add.group({
+				key: 'fluffy',
+			});
+
+			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy').setScale(0.5);
+			this.bigFluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
+
 		/*Texte*/
 			//Gold
 		this.goldText = this.add.text(730, 100, ' ', { fontSize: '44px', fill: '#fff' }).setScrollFactor(0);
@@ -155,7 +160,23 @@ class test extends Phaser.Scene {
 
 			}
 
+			function LuxuryCocktail()
+			{
+				this.fluffyCockail.destroy();
+				console.log(this.health);
+				this.health++;
+			}
+
+			function BigLuxuryCocktail()
+			{
+				this.bigFluffyCockail.destroy();
+				console.log(this.health);
+				this.health+=2;
+			}
+
 		//Colliders
+			this.physics.add.overlap(this.bigFluffyCockail, this.player, BigLuxuryCocktail, null,this);
+			this.physics.add.overlap(this.fluffyCockail, this.player, LuxuryCocktail, null,this);
 			this.physics.add.overlap(this.ennemiABullets, this.player, hitPlayer, null,this);
 			this.physics.add.overlap(this.groupeBullets, this.ennemiA, hitEnnemi, null,this);
 	}
