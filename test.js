@@ -162,16 +162,36 @@ class test extends Phaser.Scene {
 
 			function LuxuryCocktail()
 			{
-				this.fluffyCockail.destroy();
-				console.log(this.health);
-				this.health++;
+				if (this.health < 6)
+				{
+					this.fluffyCockail.destroy();
+					this.health++;
+
+					if (this.health == 4 || this.health == 3) {
+						this.vie2.setVisible(true);
+					}
+
+					if (this.health == 6 || this.health == 5) {
+						this.vie3.setVisible(true);
+					}
+				}
 			}
 
 			function BigLuxuryCocktail()
 			{
-				this.bigFluffyCockail.destroy();
-				console.log(this.health);
-				this.health+=2;
+				if (this.health < 6)
+				{
+					this.bigFluffyCockail.destroy();
+					this.health+=2;
+
+					if (this.health == 4 || this.health == 3) {
+						this.vie2.setVisible(true);
+					}
+
+					if (this.health == 6 || this.health == 5) {
+						this.vie3.setVisible(true);
+					}
+				}
 			}
 
 		//Colliders
@@ -226,15 +246,15 @@ class test extends Phaser.Scene {
 		//PVs
 			if(this.health == 4)
 			{
-				this.vie3.destroy(true);
+				this.vie3.setVisible(false);
 			}
 			if(this.health == 2)
 			{
-				this.vie2.destroy(true);
+				this.vie2.setVisible(false);
 			}
 			if(this.health == 0) 
 			{
-				this.vie1.destroy();
+				this.vie1.setVisible(false);
 				
 				this.physics.pause();
 			    this.player.setTint(0xff0000);
