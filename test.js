@@ -17,6 +17,7 @@ class test extends Phaser.Scene {
 		this.load.image('2vie', 'assetsProto/2vie.png');
 		this.load.image('1vie', 'assetsProto/1vie.png');
 
+		this.load.image('munition','assetsProto/ammo.png');
 		this.load.image('bullet','assetsProto/gray.png');
 
 		this.load.image('money','assetsProto/gold.png');
@@ -43,6 +44,19 @@ class test extends Phaser.Scene {
 		this.groupeBullets = this.physics.add.group();
 		this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyFarObject, callbackScope: this, loop: true });
 
+		//Collectibles
+		    this.nSoul = 0;
+
+		    this.nAmmo = 100;
+			this.ammo = 6;
+
+			this.fluffyWhim = this.physics.add.group({
+				key: 'fluffy',
+			});
+
+			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy').setScale(0.5);
+			this.bigFluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
+
 		//Tir
 			this.input.on('pointermove', function (pointer)
 		    {
@@ -53,19 +67,24 @@ class test extends Phaser.Scene {
 		    {	
 		    	if (pointer.leftButtonDown()) 
 		    	{
-		    		if (this.ammo > 0) 
-			    	{
-			    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet').setScale(0.5);
-			    		bullet.setVelocity(pointer.x, pointer.y); 
-				        this.physics.moveToObject(bullet, pointer, 400);
-				        this.ammo--;
-				        this.ammoText.setText('' + this.ammo);
-			    	}
 
-			    	/*if (this.ammo == 0)
-			    	{
-			    		
-			    	} */
+		    		if (this.nAmmo > 0) 
+		    		{
+		    			if (this.ammo > 0) 
+				    	{
+				    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet').setScale(0.5);
+				    		bullet.setVelocity(pointer.x, pointer.y); 
+					        this.physics.moveToObject(bullet, pointer, 400);
+					        this.ammo--;
+					        this.ammoText.setText('' + this.ammo);
+				    	}
+
+				    	/*if (this.ammo == 0)
+				    	{
+				    		
+				    	} */
+		    		}
+		    		
 		    	}
 		    }, this);
 
@@ -89,26 +108,16 @@ class test extends Phaser.Scene {
 		    this.ennemiABullets = this.physics.add.group();
 		    
 
-		//Collectibles
-		    this.nGold = 0;
-
-		    this.nAmmo;
-			this.ammo = 6;
-
-			this.fluffyWhim = this.physics.add.group({
-				key: 'fluffy',
-			});
-
-			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy').setScale(0.5);
-			this.bigFluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
+		
 
 		/*Texte*/
 			//Gold
-		this.goldText = this.add.text(730, 100, ' ', { fontSize: '44px', fill: '#fff' }).setScrollFactor(0);
+		this.soulText = this.add.text(730, 100, ' ', { fontSize: '44px', fill: '#fff' }).setScrollFactor(0);
 			//Balle dans le chargeur
 		this.ammoText = this.add.text(730, 16, '6 ', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
 			//Munitions 
-		this.nAmmoText = this.add.text(730, 50, '∞', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
+		this.nAmmoText = this.add.text(730, 50, '', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
+		this.nAmmoText.setText('' + this.nAmmo);
 
 		/*Ensemble des fonctions*/
 			function hitEnnemi(bullet, ennemiA) 
@@ -120,14 +129,33 @@ class test extends Phaser.Scene {
 				{
 					ennemiA.destroy();
 
-					this.cGold = this.physics.add.group({
-				        key: 'money',
-				        repeat: Phaser.Math.Between(1, 3),
-				        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
-				        setScale: { x: 0.5, y: 0.5}
-				    });
+					var spawnCollect = Phaser.Math.Between(0, 30);
+					console.log(spawnCollect);
+					if(spawnCollect <= 15 || spawnCollect > 18)
+					{
+						this.cSoul = this.physics.add.group({
+					        key: 'money',
+					        repeat: Phaser.Math.Between(1, 3),
+					        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
+					        setScale: { x: 0.5, y: 0.5}
+					    });
 
-				    this.physics.add.overlap(this.player, this.cGold, collectGold, null,this);
+					    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
+					}
+
+					if(spawnCollect > 15 && spawnCollect < 18)
+					{
+						this.cAmmo = this.physics.add.group({
+					        key: 'munition',
+					        repeat: Phaser.Math.Between(1, 3),
+					        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
+					        setScale: { x: 0.5, y: 0.5}
+					    });
+
+					    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
+					}
+
+					
 				}
 			}
 
@@ -139,11 +167,11 @@ class test extends Phaser.Scene {
 
 			}
 
-			function collectGold(player, money) 
+			function collectSoul(player, money) 
 			{
 				money.destroy();
-				this.nGold++;
-				this.goldText.setText('' + this.nGold).setScale(0.5);
+				this.nSoul++;
+				this.soulText.setText('' + this.nSoul).setScale(0.5);
 			}
 
 			function shootPlayer(ennemiA)
@@ -239,8 +267,11 @@ class test extends Phaser.Scene {
 		//Rechargement
 			if(this.keys.R.isDown)
 			{
+				this.nAmmo-= 6 - this.ammo;
+				this.nAmmoText.setText('' + this.nAmmo);
 				this.ammo = 6;
 				this.ammoText.setText('' + this.ammo);
+
 			}
 
 		//PVs
