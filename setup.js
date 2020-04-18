@@ -1,15 +1,17 @@
-var config = {
+const config = {
+  type: Phaser.AUTO,
   width: 800,
   height: 600,
+  backgroundColor: "#0000ff",
+  parent: "game-container",
   pixelArt: true,
+  scene: [test],
   physics: {
-    default: 'arcade',
+    default: "arcade",
     arcade: {
-        gravity: { y: 0 },
-        debug: false
+      gravity: { y: 0 }
     }
-  },
-  scene: [test]
+  }
 };
 
 var game = new Phaser.Game(config);

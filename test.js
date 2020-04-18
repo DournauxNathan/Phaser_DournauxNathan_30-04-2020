@@ -10,80 +10,86 @@ class test extends Phaser.Scene {
 	preload() {
 		this.load.image('background','assetsProto/sky.png');
 		this.load.image('perso','assetsProto/purple.png');
+		this.load.image('ennemi','assetsProto/red.png');
 		this.load.image('cursor','assetsProto/red.png');
 
 		this.load.image('3vie', 'assetsProto/3vie.png');
 		this.load.image('2vie', 'assetsProto/2vie.png');
 		this.load.image('1vie', 'assetsProto/1vie.png');
+
+		this.load.image('munition','assetsProto/ammo.png');
+		this.load.image('bullet','assetsProto/orange.png');
+
+		this.load.image('chestKey','assetsProto/gray.png');
+		this.load.image('money','assetsProto/gold.png');
+		this.load.image('chest','assetsProto/white.png');
+		this.load.image('locker','assetsProto/platform.png');
+		this.load.image('objUp','assetsProto/bleu.png');
+
+		this.load.image('fluffy','assetsProto/fluffy.png');
+
+		this.load.image('trigger','assetsProto/noir.png');
+
+		this.load.image('grid','assetsProto/grid.png');
+
+
+		//Plugin - Tableau
+		var url;
+		url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexgridtableplugin.min.js';
+		this.load.plugin('rexgridtableplugin', url, true);
 	}
 
 	create() {
-		/*Creation des projectiles*/
-		 	this.Bullet = new Phaser.Class({
-
-		        Extends: Phaser.GameObjects.Image,
-
-		        initialize:
-
-		        function Bullet (scene)
-		        {
-		            Phaser.GameObjects.Image.call(this, scene, -100, 0, 'bullet');
-
-		            this.speed = Phaser.Math.GetSpeed(600, 1);
-		        },
-
-		        fire: function (x, y)
-		        {
-		            this.setPosition(x, y);
-
-		            this.setActive(true);
-		            this.setVisible(true);
-		        },
-
-		        update: function (time, delta)
-		        {
-		            this.x += this.speed * delta;
-
-		            if (this.x > 820)
-		            {
-		                this.setActive(false);
-		                this.setVisible(false);
-		            }
-		        } 
-	    	});
-
-		this.bullets = this.physics.add.group({
-	        classType: this.Bullet,
-	        maxSize: 30,
-	        runChildUpdate: true
-		});
-
-		this.add.image(0,0,'background').setOrigin(0,0);
+		/*Variable publique - modifier leurs valeurs pour tester différents paramètres*/
+			this.speed = 400; //Vitesse du joueur
+			this.health = 6;  //Vie du joueur
+			this.maxHealth = 6;  //Vie maximal du joueur
+			this.keys = this.input.keyboard.addKeys('Z,Q,S,D,R'); //Input de déplacent / intérargir / rechargement 
+			this.useObject = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); //Utilisation d'object
+			this.openInventory = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I); //Inventaire
+			this.isInventoryOpen = 0; // - booléen_inventaire: 0 = fermé / 1 = ouvert
 
 	    this.physics.world.setBounds(0, 0, 1024*2.25, 768);
 
 	    this.player = this.physics.add.sprite(100,510,'perso');
+	    this.chest = this.physics.add.staticSprite(50,510, 'chest');
 
-	    this.health = 6;
+	    this.onTrigger = this.physics.add.image(600,500, 'trigger');
 
-	    this.vie3 = this.add.image(60,30,'3vie').setScrollFactor(0);
-		this.vie2 = this.add.image(60,30,'2vie').setScrollFactor(0);
-		this.vie1 = this.add.image(60,30,'1vie').setScrollFactor(0);
+	    this.vie3 = this.add.image(80,30,'3vie').setScrollFactor(0);
+		this.vie2 = this.add.image(80,30,'2vie').setScrollFactor(0);
+		this.vie1 = this.add.image(80,30,'1vie').setScrollFactor(0);
 
-		this.keys = this.input.keyboard.addKeys('Z,Q,S,D,R');
-		this.cursors = this.input.keyboard.createCursorKeys();
-		this.cursor = this.add.image(0, 0, 'cursor').setVisible(false).setScale(0.25);
+		this.lockers = this.physics.add.staticGroup();
+		
+		this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
 
 		this.groupeBullets = this.physics.add.group();
+		//this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyBullet, callbackScope: this, loop: true });
+		
+		//Collectibles
+		    this.nSoul = 0;
 
-		this.nAmmo;
-		this.ammo = 6;
+		    this.nAmmo = 100;
+			this.ammo = 6;
 
-		/*Texte*/
-			//Balle dans le chargeur
-		this.ammoText = this.add.text(730, 16, '6 ', { fontSize: '32px', fill: '#000' }).setScrollFactor(0);
-			//Munitions 
-		this.nAmmoText = this.add.text(730, 50, '∞', { fontSize: '32px', fill: '#000' }).setScrollFactor(0);
+			this.fluffyWhim = this.physics.add.group({
+				key: 'fluffy',
+			});
+
+
+			this.chestKey = this.physics.add.group({
+				key: 'chestKey',
+				setXY: {x: 250, y:250}
+			});
+
+			this.nChestKey = 0;
+
+			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
+			this.bigFluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
+
+			this.objUpgrade = this.physics.add.sprite(200,510,'objUp');
+			this.isUsable = 0;
 
 		//Tir
 			this.input.on('pointermove', function (pointer)
@@ -95,35 +101,256 @@ class test extends Phaser.Scene {
 		    {	
 		    	if (pointer.leftButtonDown()) 
 		    	{
-		    		if (this.ammo > 0) 
-			    	{
-			    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet');
-			    		 this.cameras.main.shake(0.01, 100);
-				        this.physics.moveToObject(bullet, pointer, 400);
-				        this.ammo--;
-				        this.ammoText.setText('' + this.ammo);
-			    	}
 
-			    	if (this.ammo == 0)
-			    	{
-			    		console.log("Click click");
-			    	} 
+		    		if (this.nAmmo > 0) 
+		    		{
+		    			if (this.ammo > 0) 
+				    	{
+				    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet');
+				    		bullet.setVelocity(pointer.x, pointer.y); 
+					        this.physics.moveToObject(bullet, pointer, 400);
+					        this.ammo--;
+					        this.ammoText.setText('' + this.ammo);
+				    	}
+
+				    	/*if (this.ammo == 0)
+				    	{
+				    		
+				    	} */
+		    		}
+		    		
 		    	}
 		    }, this);
 
 		this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+
+		this.gizmos = this.physics.add.group();
+
+		//IA
+			//EnnemiA
+			this.ennemiA = this.physics.add.group({
+		        key: 'ennemi',
+		        repeat: Phaser.Math.Between(1, 1),
+		        setXY: { x: Phaser.Math.Between(0, 350), y: Phaser.Math.Between(0, 350),  stepX: 110 ,  stepY: 110 }	
+		    });
+		    
+		    this.ennemiA.children.iterate(function (ennemiA) {
+		        ennemiA.health = Phaser.Math.Between(2, 5);			        
+		    });
+
+			this.bulletEvent = this.time.addEvent({ delay: 2500, callback: shootPlayer, callbackScope: this, loop: true });
+		    this.ennemiABullets = this.physics.add.group();
+		   
+		/*Texte*/
+			//Gold
+		this.soulText = this.add.text(730, 100, ' ', { fontSize: '44px', fill: '#fff' }).setScrollFactor(0);
+			//Balle dans le chargeur
+		this.ammoText = this.add.text(730, 16, '6 ', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
+			//Munitions 
+		this.nAmmoText = this.add.text(730, 50, '', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
+		this.nAmmoText.setText('' + this.nAmmo);
+
+		 
+ 
+		/*Ensemble des fonctions*/
+			function hitEnnemi(bullet, ennemiA) 
+			{
+				ennemiA.health--;
+				bullet.destroy(true);
+				
+
+				if (ennemiA.health == 0) 
+				{
+					ennemiA.destroy();
+					var spawnCollect = Phaser.Math.Between(0, 30);
+
+					if(spawnCollect <= 15 || spawnCollect > 18)
+					{
+						this.cSoul = this.physics.add.group({
+					        key: 'money',
+					        repeat: Phaser.Math.Between(1, 3),
+					        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
+					    });
+
+					    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
+					}
+
+					if(spawnCollect > 15 && spawnCollect < 18)
+					{
+						this.cAmmo = this.physics.add.group({
+					        key: 'munition',
+					        repeat: Phaser.Math.Between(1, 3),
+					        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
+					    });
+
+					    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
+					}
+				}
+			}
+
+			function hitPlayer(player, groupeBullets)
+			{
+				this.health--;
+				console.log(this.health);
+				groupeBullets.destroy(true);
+			}
+
+			function collectSoul(player, money) 
+			{
+				money.destroy();
+				this.nSoul++;
+				this.soulText.setText('' + this.nSoul);
+			}
+
+			function shootPlayer(ennemiA)
+			{
+				if (this.ennemiA.countActive(true) != 0) 
+				{
+		       		this.bullet = this.ennemiABullets.create(this.ennemiA.x, this.ennemiA.y, 'bullet');
+		        	this.physics.moveToObject(this.bullet, this.player, 300);
+				}
+			}
+
+			function LuxuryCocktail()
+			{
+				if (this.health < this.maxHealth)
+				{
+					this.fluffyCockail.destroy();
+					this.health++;
+
+					if (this.health == 4 || this.health == 3) {
+						this.vie2.setVisible(true);
+					}
+
+					if (this.health == this.maxHealth || this.health == 5) {
+						this.vie3.setVisible(true);
+					}
+				}
+			}
+
+			function BigLuxuryCocktail()
+			{
+				if (this.health < this.maxHealth)
+				{
+					this.bigFluffyCockail.destroy();
+					this.health+=2;
+
+					if (this.health == 4 || this.health == 3) {
+						this.vie2.setVisible(true);
+					}
+
+					if (this.health == this.maxHealth || this.health == 5) {
+						this.vie3.setVisible(true);
+					}
+				}
+			}
+
+			function collectUpgrade()
+			{
+				this.isUsable = 1;
+				this.objUpgrade.destroy();
+				console.log("Vous avez ramasser un objet");
+			}
+
+			function collectKeys(player, chestKey)
+			{
+				chestKey.disableBody(true,true);
+				this.nChestKey++;
+
+			}
+
+			function openChest()
+			{
+				if (this.nChestKey > 0) 
+				{
+					this.chest.setTint(0x00ff00);
+					console.log("coffre ouvert");
+				}
+			}
+
+			function openChest()
+			{
+				if (this.nChestKey > 0) 
+				{
+					this.chest.setTint(0x00ff00);
+					console.log("coffre ouvert");
+				}
+			}
+
+			function lockRoom()
+			{
+				this.lockers.create(600, 200, 'locker');
+				this.lockers.create(600, 800, 'locker');
+				this.lockers.create(300, 500, 'locker');
+				this.lockers.create(900, 500, 'locker');
+
+			}
+
+			function Inventory(scene, cell) 
+			{
+			    var bg = scene.add.graphics(0, 0)
+			        .fillStyle(0x555555)
+			        .fillRect(2, 2, 58, 58);
+				var txt = scene.add.text(40, 45, cell.index);
+				var container = scene.add.container(0, 0, [bg, txt]);
+				return container;
+
+				bg.on('pointerover', function (event) {
+
+			        this.setTint(0xff0000);
+
+			    });
+
+			    bg.on('pointerout', function (event) {
+
+			        this.clearTint();
+
+			    });
+			}
+
+		    function onCellVisible(cell) {
+				cell.setContainer(Inventory(this, cell));
+		    }
+
+		    this.table = this.add.rexGridTable(500, 500, 600, 500, {
+				cellHeight: 60,
+				cellWidth: 60,
+				cellsCount: 21,
+				columns: 7,
+				cellVisibleCallback: onCellVisible.bind(this),
+	    	});		
+
+		    this.table.setVisible(false).setScrollFactor(0).setInteractive();
+
+		    this.table.on('pointermove', function (pointer) {
+		        console.log("Yay")
+		    });
+
+		//Colliders
+			this.physics.add.collider(this.chest, this.player, openChest, null,this);
+			this.physics.add.collider(this.lockers, this.player);
+			this.physics.add.overlap(this.onTrigger, this.player, lockRoom, null,this);
+			this.physics.add.overlap(this.chestKey, this.player, collectKeys, null,this);
+			this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
+			this.physics.add.overlap(this.bigFluffyCockail, this.player, BigLuxuryCocktail, null,this);
+			this.physics.add.overlap(this.fluffyCockail, this.player, LuxuryCocktail, null,this);
+			this.physics.add.overlap(this.ennemiABullets, this.player, hitPlayer, null,this);
+			this.physics.add.overlap(this.groupeBullets, this.ennemiA, hitEnnemi, null,this);
 	}
 
 	update() {
+		//Console.logs
+			//console.log(this.isInventoryOpen);
+
 		//Déplacement
 			if (this.keys.Q.isDown)
 			{
-				this.player.setVelocityX(-400);
+				this.player.setVelocityX(-this.speed);
 				this.player.setFlipX(true);
 			}
 			else if (this.keys.D.isDown)
 			{
-				this.player.setVelocityX(400);
+				this.player.setVelocityX(this.speed);
 				this.player.setFlipX(false);
 			}
 			else
@@ -133,12 +360,12 @@ class test extends Phaser.Scene {
 
 			if (this.keys.Z.isDown)
 			{
-				this.player.setVelocityY(-400);
+				this.player.setVelocityY(-this.speed);
 				this.player.setFlipX(true);
 			}
 			else if (this.keys.S.isDown)
 			{
-				this.player.setVelocityY(400);
+				this.player.setVelocityY(this.speed);
 				this.player.setFlipX(false);
 			}
 			else
@@ -146,33 +373,66 @@ class test extends Phaser.Scene {
 				this.player.setVelocityY(0);
 			}
 
-			
-
-
-
+		//Déplacemet des ennemis
+	
 		//Rechargement
 			if(this.keys.R.isDown)
 			{
+				this.nAmmo-= 6 - this.ammo;
+				this.nAmmoText.setText('' + this.nAmmo);
 				this.ammo = 6;
 				this.ammoText.setText('' + this.ammo);
 			}
 
+		//Inventaire
+			if(this.isInventoryOpen == 0 && Phaser.Input.Keyboard.JustDown(this.openInventory))
+			{
+				this.physics.pause();
+				this.table.setVisible(true);
+				this.isInventoryOpen = 1;
+			}
+
+			if (this.isInventoryOpen == 1 && Phaser.Input.Keyboard.JustDown(this.openInventory)) 
+			{
+				this.physics.resume() 
+				this.table.setVisible(false);
+				this.isInventoryOpen = 0;
+			}
+
+		//Capacités
+			if (this.isUsable == 1 && Phaser.Input.Keyboard.JustDown(this.useObject))
+			{
+				this.time.slowMotion = 1.0;
+				this.isUsable = 0;
+			}
+			else if (this.isUsable == 0 && Phaser.Input.Keyboard.JustDown(this.useObject))
+			{
+				console.log("Vous n'avez aucun objet");
+			}
+
 		//PVs
-			if(this.nVies == 4)
+			if(this.health == 4)
 			{
-				this.vie3.destroy(true);
+				this.vie3.setVisible(false);
 			}
-			if(this.nVies == 2)
+			if(this.health == 2)
 			{
-				this.vie2.destroy(true);
+				this.vie2.setVisible(false);
 			}
-			if(this.nVies == 0) 
+			if(this.health == 0) 
 			{
-				this.vie1.destroy();
+				this.vie1.setVisible(false);
 				
 				this.physics.pause();
 			    this.player.setTint(0xff0000);
 			}
+
+		//Destruction des balles
+
+		if (this.ennemiA.countActive(true) === 0)
+		{
+			this.lockers.destroy(true);
+		}
 
 	}
 }
