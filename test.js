@@ -18,32 +18,42 @@ class test extends Phaser.Scene {
 		this.load.image('1vie', 'assetsProto/1vie.png');
 
 		this.load.image('munition','assetsProto/ammo.png');
-		this.load.image('bullet','assetsProto/gray.png');
+		this.load.image('bullet','assetsProto/orange.png');
 
+		this.load.image('chestKey','assetsProto/gray.png');
 		this.load.image('money','assetsProto/gold.png');
+		this.load.image('chest','assetsProto/white.png');
 
 		this.load.image('fluffy','assetsProto/fluffy.png');
 	}
 
 	create() {
+		/*Variable publique - modifier leurs valeurs pour tester différents paramètres*/
+			this.speed = 400; //Vitesse du joueur
+			this.health = 6;  //Vie du joueur
+			this.maxHealth = 6;  //Vie maximal du joueur
+			this.keys = this.input.keyboard.addKeys('Z,Q,S,D,R'); //Input de déplacent / intérargir / rechargement 
+			this.useObject = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); //Utilisation d'object
+			this.openInventory = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I); //Inventaire
+			this.isInventoryOpen = 0; // - booléen_inventaire: 0 = fermé / 1 = ouvert
 
 	    this.physics.world.setBounds(0, 0, 1024*2.25, 768);
 
 	    this.player = this.physics.add.sprite(100,510,'perso');
+	    this.chest = this.physics.add.staticSprite(50,510, 'chest');
 
-	    this.health = 6;
 
 	    this.vie3 = this.add.image(80,30,'3vie').setScrollFactor(0);
 		this.vie2 = this.add.image(80,30,'2vie').setScrollFactor(0);
 		this.vie1 = this.add.image(80,30,'1vie').setScrollFactor(0);
 
-		this.keys = this.input.keyboard.addKeys('Z,Q,S,D,R');
-		this.cursors = this.input.keyboard.createCursorKeys();
-		this.cursor = this.add.image(0, 0, 'cursor').setVisible(false).setScale(0.25);
+		
+		
+		this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
 
 		this.groupeBullets = this.physics.add.group();
-		this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyFarObject, callbackScope: this, loop: true });
-
+		//this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyBullet, callbackScope: this, loop: true });
+		
 		//Collectibles
 		    this.nSoul = 0;
 
@@ -54,8 +64,19 @@ class test extends Phaser.Scene {
 				key: 'fluffy',
 			});
 
-			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy').setScale(0.5);
+
+			this.chestKey = this.physics.add.group({
+				key: 'chestKey',
+				setXY: {x: 250, y:250}
+			});
+
+			this.nChestKey = 0;
+
+			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
 			this.bigFluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
+
+			this.objUpgrade = this.physics.add.sprite(200,510,'');
+			this.isUsable = 0;
 
 		//Tir
 			this.input.on('pointermove', function (pointer)
@@ -72,7 +93,7 @@ class test extends Phaser.Scene {
 		    		{
 		    			if (this.ammo > 0) 
 				    	{
-				    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet').setScale(0.5);
+				    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet');
 				    		bullet.setVelocity(pointer.x, pointer.y); 
 					        this.physics.moveToObject(bullet, pointer, 400);
 					        this.ammo--;
@@ -106,10 +127,7 @@ class test extends Phaser.Scene {
 
 			this.bulletEvent = this.time.addEvent({ delay: 2500, callback: shootPlayer, callbackScope: this, loop: true });
 		    this.ennemiABullets = this.physics.add.group();
-		    
-
-		
-
+		   
 		/*Texte*/
 			//Gold
 		this.soulText = this.add.text(730, 100, ' ', { fontSize: '44px', fill: '#fff' }).setScrollFactor(0);
@@ -137,7 +155,6 @@ class test extends Phaser.Scene {
 					        key: 'money',
 					        repeat: Phaser.Math.Between(1, 3),
 					        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
-					        setScale: { x: 0.5, y: 0.5}
 					    });
 
 					    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
@@ -149,7 +166,6 @@ class test extends Phaser.Scene {
 					        key: 'munition',
 					        repeat: Phaser.Math.Between(1, 3),
 					        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
-					        setScale: { x: 0.5, y: 0.5}
 					    });
 
 					    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
@@ -164,28 +180,22 @@ class test extends Phaser.Scene {
 				this.health--;
 				console.log(this.health);
 				groupeBullets.destroy(true);
-
 			}
 
 			function collectSoul(player, money) 
 			{
 				money.destroy();
 				this.nSoul++;
-				this.soulText.setText('' + this.nSoul).setScale(0.5);
+				this.soulText.setText('' + this.nSoul);
 			}
 
 			function shootPlayer(ennemiA)
 			{
 				if (this.ennemiA.countActive(true) != 0) 
 				{
-		       		var bullet = this.ennemiABullets.create(this.ennemiA.x, this.ennemiA.y, 'bullet').setScale(0.5);
-		        	this.physics.moveToObject(bullet, this.player, 300);
+		       		this.bullet = this.ennemiABullets.create(this.ennemiA.x, this.ennemiA.y, 'bullet');
+		        	this.physics.moveToObject(this.bullet, this.player, 300);
 				}
-			}
-
-			function destroyFarObject()
-			{
-
 			}
 
 			function LuxuryCocktail()
@@ -199,7 +209,7 @@ class test extends Phaser.Scene {
 						this.vie2.setVisible(true);
 					}
 
-					if (this.health == 6 || this.health == 5) {
+					if (this.health == this.maxHealth || this.health == 5) {
 						this.vie3.setVisible(true);
 					}
 				}
@@ -207,7 +217,7 @@ class test extends Phaser.Scene {
 
 			function BigLuxuryCocktail()
 			{
-				if (this.health < 6)
+				if (this.health < this.maxHealth)
 				{
 					this.bigFluffyCockail.destroy();
 					this.health+=2;
@@ -216,13 +226,39 @@ class test extends Phaser.Scene {
 						this.vie2.setVisible(true);
 					}
 
-					if (this.health == 6 || this.health == 5) {
+					if (this.health == this.maxHealth || this.health == 5) {
 						this.vie3.setVisible(true);
 					}
 				}
 			}
 
+			function collectUpgrade()
+			{
+				this.isUsable = 1;
+				this.objUpgrade.destroy();
+				console.log("Vous avez ramasser un objet");
+			}
+
+			function collectKeys(player, chestKey)
+			{
+				chestKey.disableBody(true,true);
+				this.nChestKey++;
+
+			}
+
+			function openChest()
+			{
+				if (this.nChestKey > 0) 
+				{
+					this.chest.setTint(0x00ff00);
+					console.log("coffre ouvert");
+				}
+			}
+
 		//Colliders
+			this.physics.add.collider(this.chest, this.player, openChest, null,this);
+			this.physics.add.overlap(this.chestKey, this.player, collectKeys, null,this);
+			this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
 			this.physics.add.overlap(this.bigFluffyCockail, this.player, BigLuxuryCocktail, null,this);
 			this.physics.add.overlap(this.fluffyCockail, this.player, LuxuryCocktail, null,this);
 			this.physics.add.overlap(this.ennemiABullets, this.player, hitPlayer, null,this);
@@ -230,15 +266,18 @@ class test extends Phaser.Scene {
 	}
 
 	update() {
+		//Console.logs
+			//console.log(this.isInventoryOpen);
+
 		//Déplacement
 			if (this.keys.Q.isDown)
 			{
-				this.player.setVelocityX(-400);
+				this.player.setVelocityX(-this.speed);
 				this.player.setFlipX(true);
 			}
 			else if (this.keys.D.isDown)
 			{
-				this.player.setVelocityX(400);
+				this.player.setVelocityX(this.speed);
 				this.player.setFlipX(false);
 			}
 			else
@@ -248,12 +287,12 @@ class test extends Phaser.Scene {
 
 			if (this.keys.Z.isDown)
 			{
-				this.player.setVelocityY(-400);
+				this.player.setVelocityY(-this.speed);
 				this.player.setFlipX(true);
 			}
 			else if (this.keys.S.isDown)
 			{
-				this.player.setVelocityY(400);
+				this.player.setVelocityY(this.speed);
 				this.player.setFlipX(false);
 			}
 			else
@@ -262,8 +301,7 @@ class test extends Phaser.Scene {
 			}
 
 		//Déplacemet des ennemis
-		
-
+	
 		//Rechargement
 			if(this.keys.R.isDown)
 			{
@@ -271,7 +309,30 @@ class test extends Phaser.Scene {
 				this.nAmmoText.setText('' + this.nAmmo);
 				this.ammo = 6;
 				this.ammoText.setText('' + this.ammo);
+			}
 
+		//Inventaire
+			if(this.isInventoryOpen == 0 && Phaser.Input.Keyboard.JustDown(this.openInventory))
+			{
+				console.log("Inventaire ouvert");
+				this.isInventoryOpen = 1;
+			}
+
+			if (this.isInventoryOpen == 1 && Phaser.Input.Keyboard.JustDown(this.openInventory)) 
+			{
+				console.log("Inventaire fermé");
+				this.isInventoryOpen = 0;
+			}
+
+		//Capacités
+			if (this.isUsable == 1 && Phaser.Input.Keyboard.JustDown(this.useObject))
+			{
+				console.log("Vous utilisé l'objet");
+				this.isUsable = 0;
+			}
+			else if (this.isUsable == 0 && Phaser.Input.Keyboard.JustDown(this.useObject))
+			{
+				console.log("Vous n'avez aucun objet");
 			}
 
 		//PVs
