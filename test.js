@@ -29,6 +29,14 @@ class test extends Phaser.Scene {
 		this.load.image('fluffy','assetsProto/fluffy.png');
 
 		this.load.image('trigger','assetsProto/noir.png');
+
+		this.load.image('grid','assetsProto/grid.png');
+
+
+		//Plugin - Tableau
+		var url;
+		url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexgridtableplugin.min.js';
+		this.load.plugin('rexgridtableplugin', url, true);
 	}
 
 	create() {
@@ -142,6 +150,8 @@ class test extends Phaser.Scene {
 		this.nAmmoText = this.add.text(730, 50, '', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
 		this.nAmmoText.setText('' + this.nAmmo);
 
+		 
+ 
 		/*Ensemble des fonctions*/
 			function hitEnnemi(bullet, ennemiA) 
 			{
@@ -276,6 +286,46 @@ class test extends Phaser.Scene {
 
 			}
 
+			function Inventory(scene, cell) 
+			{
+			    var bg = scene.add.graphics(0, 0)
+			        .fillStyle(0x555555)
+			        .fillRect(2, 2, 58, 58);
+				var txt = scene.add.text(40, 45, cell.index);
+				var container = scene.add.container(0, 0, [bg, txt]);
+				return container;
+
+				bg.on('pointerover', function (event) {
+
+			        this.setTint(0xff0000);
+
+			    });
+
+			    bg.on('pointerout', function (event) {
+
+			        this.clearTint();
+
+			    });
+			}
+
+		    function onCellVisible(cell) {
+				cell.setContainer(Inventory(this, cell));
+		    }
+
+		    this.table = this.add.rexGridTable(500, 500, 600, 500, {
+				cellHeight: 60,
+				cellWidth: 60,
+				cellsCount: 21,
+				columns: 7,
+				cellVisibleCallback: onCellVisible.bind(this),
+	    	});		
+
+		    this.table.setVisible(false).setScrollFactor(0).setInteractive();
+
+		    this.table.on('pointermove', function (pointer) {
+		        console.log("Yay")
+		    });
+
 		//Colliders
 			this.physics.add.collider(this.chest, this.player, openChest, null,this);
 			this.physics.add.collider(this.lockers, this.player);
@@ -337,20 +387,22 @@ class test extends Phaser.Scene {
 		//Inventaire
 			if(this.isInventoryOpen == 0 && Phaser.Input.Keyboard.JustDown(this.openInventory))
 			{
-				console.log("Inventaire ouvert");
+				this.physics.pause();
+				this.table.setVisible(true);
 				this.isInventoryOpen = 1;
 			}
 
 			if (this.isInventoryOpen == 1 && Phaser.Input.Keyboard.JustDown(this.openInventory)) 
 			{
-				console.log("Inventaire fermé");
+				this.physics.resume() 
+				this.table.setVisible(false);
 				this.isInventoryOpen = 0;
 			}
 
 		//Capacités
 			if (this.isUsable == 1 && Phaser.Input.Keyboard.JustDown(this.useObject))
 			{
-				console.log("Vous utilisé l'objet");
+				this.time.slowMotion = 1.0;
 				this.isUsable = 0;
 			}
 			else if (this.isUsable == 0 && Phaser.Input.Keyboard.JustDown(this.useObject))
