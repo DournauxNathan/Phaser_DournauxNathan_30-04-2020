@@ -23,8 +23,12 @@ class test extends Phaser.Scene {
 		this.load.image('chestKey','assetsProto/gray.png');
 		this.load.image('money','assetsProto/gold.png');
 		this.load.image('chest','assetsProto/white.png');
+		this.load.image('locker','assetsProto/platform.png');
+		this.load.image('objUp','assetsProto/bleu.png');
 
 		this.load.image('fluffy','assetsProto/fluffy.png');
+
+		this.load.image('trigger','assetsProto/noir.png');
 	}
 
 	create() {
@@ -42,12 +46,13 @@ class test extends Phaser.Scene {
 	    this.player = this.physics.add.sprite(100,510,'perso');
 	    this.chest = this.physics.add.staticSprite(50,510, 'chest');
 
+	    this.onTrigger = this.physics.add.image(600,500, 'trigger');
 
 	    this.vie3 = this.add.image(80,30,'3vie').setScrollFactor(0);
 		this.vie2 = this.add.image(80,30,'2vie').setScrollFactor(0);
 		this.vie1 = this.add.image(80,30,'1vie').setScrollFactor(0);
 
-		
+		this.lockers = this.physics.add.staticGroup();
 		
 		this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
 
@@ -75,7 +80,7 @@ class test extends Phaser.Scene {
 			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
 			this.bigFluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
 
-			this.objUpgrade = this.physics.add.sprite(200,510,'');
+			this.objUpgrade = this.physics.add.sprite(200,510,'objUp');
 			this.isUsable = 0;
 
 		//Tir
@@ -142,13 +147,13 @@ class test extends Phaser.Scene {
 			{
 				ennemiA.health--;
 				bullet.destroy(true);
+				
 
 				if (ennemiA.health == 0) 
 				{
 					ennemiA.destroy();
-
 					var spawnCollect = Phaser.Math.Between(0, 30);
-					console.log(spawnCollect);
+
 					if(spawnCollect <= 15 || spawnCollect > 18)
 					{
 						this.cSoul = this.physics.add.group({
@@ -170,8 +175,6 @@ class test extends Phaser.Scene {
 
 					    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
 					}
-
-					
 				}
 			}
 
@@ -200,7 +203,7 @@ class test extends Phaser.Scene {
 
 			function LuxuryCocktail()
 			{
-				if (this.health < 6)
+				if (this.health < this.maxHealth)
 				{
 					this.fluffyCockail.destroy();
 					this.health++;
@@ -255,8 +258,28 @@ class test extends Phaser.Scene {
 				}
 			}
 
+			function openChest()
+			{
+				if (this.nChestKey > 0) 
+				{
+					this.chest.setTint(0x00ff00);
+					console.log("coffre ouvert");
+				}
+			}
+
+			function lockRoom()
+			{
+				this.lockers.create(600, 200, 'locker');
+				this.lockers.create(600, 800, 'locker');
+				this.lockers.create(300, 500, 'locker');
+				this.lockers.create(900, 500, 'locker');
+
+			}
+
 		//Colliders
 			this.physics.add.collider(this.chest, this.player, openChest, null,this);
+			this.physics.add.collider(this.lockers, this.player);
+			this.physics.add.overlap(this.onTrigger, this.player, lockRoom, null,this);
 			this.physics.add.overlap(this.chestKey, this.player, collectKeys, null,this);
 			this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
 			this.physics.add.overlap(this.bigFluffyCockail, this.player, BigLuxuryCocktail, null,this);
@@ -353,6 +376,11 @@ class test extends Phaser.Scene {
 			}
 
 		//Destruction des balles
+
+		if (this.ennemiA.countActive(true) === 0)
+		{
+			this.lockers.destroy(true);
+		}
 
 	}
 }
