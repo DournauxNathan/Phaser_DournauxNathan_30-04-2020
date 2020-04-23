@@ -8,6 +8,11 @@ class test extends Phaser.Scene {
 	}
 
 	preload() {
+		//Spritesheets
+			this.load.spritesheet('idleR','assets/idleR.png',{frameWidth: 77, frameHeight: 50});
+			this.load.spritesheet('idleY','assets/idleY.png',{frameWidth: 26, frameHeight: 45});
+
+
 		this.load.image('background','assetsProto/sky.png');
 		this.load.image('perso','assetsProto/purple.png');
 		this.load.image('ennemi','assetsProto/red.png');
@@ -18,7 +23,7 @@ class test extends Phaser.Scene {
 		this.load.image('1vie', 'assetsProto/1vie.png');
 
 		this.load.image('munition','assetsProto/ammo.png');
-		this.load.image('bullet','assetsProto/orange.png');
+		this.load.image('bullet','assets/bullet.png');
 
 		this.load.image('littleKey','assetsProto/gray.png');
 		this.load.image('money','assetsProto/gold.png');
@@ -28,7 +33,7 @@ class test extends Phaser.Scene {
 		this.load.image('locker','assetsProto/platform.png');
 		this.load.image('objUp','assetsProto/bleu.png');
 
-		this.load.image('fluffy','assetsProto/fluffy.png');
+		this.load.image('fluffy','assetsProto/item.png');
 
 		this.load.image('trigger','assetsProto/noir.png');
 
@@ -50,10 +55,10 @@ class test extends Phaser.Scene {
 			this.useObject = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); //Utilisation d'object
 			this.openInventory = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I); //Inventaire
 			this.isInventoryOpen = 0; // - booléen_inventaire: 0 = fermé / 1 = ouvert
-			this.delayBullet = 100;
+			this.delayBullet = 3000;
 
 	    
-	    this.player = this.physics.add.sprite(100,510,'perso');
+	    this.player = this.physics.add.sprite(100,510,'idleR');
 	    this.chest = this.physics.add.sprite(50,510, 'chest').setImmovable(true);
 	    this.moveBox = this.physics.add.sprite(-100,510, 'box');
 	    this.door = this.physics.add.sprite(-100, 0, 'door').setImmovable(true);
@@ -70,7 +75,23 @@ class test extends Phaser.Scene {
 
 		this.groupeBullets = this.physics.add.group();
 		//this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyBullet, callbackScope: this, loop: true });
-		
+			
+		//Animations
+			//Joueur
+				this.anims.create({
+					key:'idleR',
+					frames: this.anims.generateFrameNumbers('idleR', {rupeet: 0, end: 1}),
+					frameRate: 3,
+					repeat: -1
+				});
+
+				this.anims.create({
+					key:'idleY',
+					frames: this.anims.generateFrameNumbers('idleY', {rupeet: 0, end: 1}),
+					frameRate: 3,
+					repeat: -1
+				});
+
 		//Collectibles
 		    this.nSoul = 0;
 
@@ -402,24 +423,31 @@ class test extends Phaser.Scene {
 				this.player.setVelocityX(this.speed);
 				this.player.setFlipX(false);
 			}
-			else
+			else 
 			{
 				this.player.setVelocityX(0);
+
+				if (this.player.setVelocityX(0)) 
+				{
+					//this.player.anims.play('idleR', true);	
+				}
+				
 			}
 
 			if (this.keys.Z.isDown)
 			{
 				this.player.setVelocityY(-this.speed);
-				this.player.setFlipX(true);
+				//this.player.anims.play('idleY', true);
 			}
 			else if (this.keys.S.isDown)
 			{
 				this.player.setVelocityY(this.speed);
-				this.player.setFlipX(false);
 			}
 			else
 			{
 				this.player.setVelocityY(0);
+
+				
 			}
 
 		//Déplacemet des ennemis
