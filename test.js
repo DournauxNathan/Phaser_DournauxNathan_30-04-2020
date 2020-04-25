@@ -18,15 +18,38 @@ class test extends Phaser.Scene {
 		this.load.image('ennemi','assetsProto/red.png');
 		this.load.image('cursor','assetsProto/red.png');
 
-		this.load.image('3vie', 'assetsProto/3vie.png');
-		this.load.image('2vie', 'assetsProto/2vie.png');
-		this.load.image('1vie', 'assetsProto/1vie.png');
+		//UI - État
+			this.load.image('6vie', 'assets/UI/Etat/6vie.png');
+			this.load.image('5vie', 'assets/UI/Etat/5vie.png');
+			this.load.image('4vie', 'assets/UI/Etat/4vie.png');
+			this.load.image('3vie', 'assets/UI/Etat/3vie.png');
+			this.load.image('2vie', 'assets/UI/Etat/2vie.png');
+			this.load.image('1vie', 'assets/UI/Etat/1vie.png');
+			this.load.image('0vie', 'assets/UI/Etat/0vie.png');
+
+			this.load.image('uiKey', 'assets/UI/Etat/key2.png');
+			this.load.image('money','assets/UI_soul.png');
+
+			this.load.image('hAmmo', 'assets/UI/Etat/hAmmo.png');
+			this.load.image('mAmmo', 'assets/UI/Etat/mAmmo.png');
+			this.load.image('lAmmo', 'assets/UI/Etat/lAmmo.png');
+
+			this.load.image('6bullet', 'assets/UI/Etat/UI_bullet6.png');
+			this.load.image('5bullet', 'assets/UI/Etat/UI_bullet5.png');
+			this.load.image('4bullet', 'assets/UI/Etat/UI_bullet4.png');
+			this.load.image('3bullet', 'assets/UI/Etat/UI_bullet3.png');
+			this.load.image('2bullet', 'assets/UI/Etat/UI_bullet2.png');
+			this.load.image('1bullet', 'assets/UI/Etat/UI_bullet1.png');
+			this.load.image('0bullet', 'assets/UI/Etat/UI_bullet0.png');
+
+			this.load.image('corner', 'assets/UI/Etat/UI_object.png');
+
 
 		this.load.image('munition','assetsProto/ammo.png');
-		this.load.image('bullet','assets/bullet.png');
+		this.load.image('bullet','assetsProto/bullet.png');
 
 		this.load.image('littleKey','assetsProto/gray.png');
-		this.load.image('money','assetsProto/gold.png');
+		
 		this.load.image('chest','assetsProto/white.png');
 		this.load.image('box','assetsProto/noir.png');
 		this.load.image('door','assetsProto/noir.png');
@@ -58,16 +81,38 @@ class test extends Phaser.Scene {
 			this.delayBullet = 3000;
 
 	    
-	    this.player = this.physics.add.sprite(100,510,'idleR');
+	    this.add.image(0,0,'background').setOrigin(0,0);
+	    this.player = this.physics.add.sprite(5800,2500,'idleR');
 	    this.chest = this.physics.add.sprite(50,510, 'chest').setImmovable(true);
 	    this.moveBox = this.physics.add.sprite(-100,510, 'box');
 	    this.door = this.physics.add.sprite(-100, 0, 'door').setImmovable(true);
 
 	    this.onTrigger = this.physics.add.image(600,500, 'trigger');
 
-	    this.vie3 = this.add.image(80,30,'3vie').setScrollFactor(0);
-		this.vie2 = this.add.image(80,30,'2vie').setScrollFactor(0);
-		this.vie1 = this.add.image(80,30,'1vie').setScrollFactor(0);
+	    //Ui - État
+		    this.vie6 = this.add.image(40,40,'6vie').setScale(1.25).setScrollFactor(0);
+		    this.vie5 = this.add.image(40,40,'5vie').setScale(1.25).setScrollFactor(0);
+			this.vie4 = this.add.image(40,40,'4vie').setScale(1.25).setScrollFactor(0);
+			this.vie3 = this.add.image(40,40,'3vie').setScale(1.25).setScrollFactor(0);
+			this.vie2 = this.add.image(40,40,'2vie').setScale(1.25).setScrollFactor(0);
+			this.vie1 = this.add.image(40,40,'1vie').setScale(1.25).setScrollFactor(0);
+			this.vie0 = this.add.image(40,40,'0vie').setScale(1.25).setScrollFactor(0);
+
+			this.add.image(105,100,'money').setScale(1.25).setScrollFactor(0);
+			this.add.image(20,100,'uiKey').setScale(1.25).setScrollFactor(0);
+
+			this.ammoA = this.add.image(710,30,'hAmmo').setScale(2).setScrollFactor(0);
+			this.ammoB = this.add.image(710,30,'mAmmo').setScale(2).setScrollFactor(0);
+			this.ammoC = this.add.image(710,30,'lAmmo').setScale(2).setScrollFactor(0);
+
+			this.UI_bullet6 = this.add.image(740,70,'6bullet').setScale(1.25).setScrollFactor(0);
+		    this.UI_bullet5 = this.add.image(740,70,'5bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet4 = this.add.image(740,70,'4bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet3 = this.add.image(740,70,'3bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet2 = this.add.image(740,70,'2bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet1 = this.add.image(740,70,'1bullet').setScale(1.25).setScrollFactor(0);
+
+			this.corner = this.add.image(2,530,'corner').setOrigin(0,0).setScale(2).setScrollFactor(0);
 
 		this.lockers = this.physics.add.staticGroup();
 		
@@ -134,13 +179,7 @@ class test extends Phaser.Scene {
 				    		bullet.setVelocity(pointer.x, pointer.y); 
 					        this.physics.moveToObject(bullet, pointer, 400);
 					        this.ammo--;
-					        this.ammoText.setText('' + this.ammo);
 				    	}
-
-				    	/*if (this.ammo == 0)
-				    	{
-				    		
-				    	} */
 		    		}
 		    		
 		    	}
@@ -166,13 +205,12 @@ class test extends Phaser.Scene {
 		    this.ennemiABullets = this.physics.add.group();
 		   
 		/*Texte*/
-			//Gold
-		this.soulText = this.add.text(730, 100, ' ', { fontSize: '44px', fill: '#fff' }).setScrollFactor(0);
-			//Balle dans le chargeur
-		this.ammoText = this.add.text(730, 16, '6 ', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
-			//Munitions 
-		this.nAmmoText = this.add.text(730, 50, '', { fontSize: '32px', fill: '#fff' }).setScrollFactor(0);
-		this.nAmmoText.setText('' + this.nAmmo);
+			//Clef
+		this.keyText = this.add.text(50, 85, ' ', { fontSize: '35px', fill: '#fff' }).setScrollFactor(0);
+		this.keyText.setText('' + this.nlittleKey);
+			//Monnaie
+		this.soulText = this.add.text(130, 85, ' ', { fontSize: '35px', fill: '#fff' }).setScrollFactor(0);
+		this.soulText.setText('' + this.nSoul);
 
 		 
  
@@ -275,11 +313,11 @@ class test extends Phaser.Scene {
 						this.health++;
 
 						if (this.health == 4 || this.health == 3) {
-							this.vie2.setVisible(true);
+							this.vie4.setVisible(true);
 						}
 
 						if (this.health == this.maxHealth || this.health == 5) {
-							this.vie3.setVisible(true);
+							this.vie6.setVisible(true);
 						}
 					}
 				}
@@ -292,11 +330,11 @@ class test extends Phaser.Scene {
 						this.health+=2;
 
 						if (this.health == 4 || this.health == 3) {
-							this.vie2.setVisible(true);
+							this.vie4.setVisible(true);
 						}
 
 						if (this.health == this.maxHealth || this.health == 5) {
-							this.vie3.setVisible(true);
+							this.vie6.setVisible(true);
 						}
 					}
 				}
@@ -306,7 +344,6 @@ class test extends Phaser.Scene {
 				{
 					this.isUsable = 1;
 					this.objUpgrade.destroy();
-					console.log("Vous avez ramasser un objet");
 					
 				}
 
@@ -315,6 +352,7 @@ class test extends Phaser.Scene {
 				{
 					littleKey.disableBody(true,true);
 					this.nlittleKey++;
+					this.keyText.setText('' + this.nlittleKey);
 
 				}
 
@@ -334,6 +372,8 @@ class test extends Phaser.Scene {
 					if (this.nlittleKey > 0) 
 					{
 						this.chest.setTint(0x00ff00);
+						this.nlittleKey--;
+						this.keyText.setText('' + this.nlittleKey);
 						console.log("coffre ouvert");
 					}
 				}
@@ -344,6 +384,8 @@ class test extends Phaser.Scene {
 					if (this.nlittleKey > 0) 
 					{
 						this.door.destroy();
+						this.nlittleKey--;
+						this.keyText.setText('' + this.nlittleKey);
 						console.log("Porte ouverte");
 					}
 				}
@@ -456,9 +498,14 @@ class test extends Phaser.Scene {
 			if(this.keys.R.isDown)
 			{
 				this.nAmmo-= 6 - this.ammo;
-				this.nAmmoText.setText('' + this.nAmmo);
 				this.ammo = 6;
-				this.ammoText.setText('' + this.ammo);
+
+				this.UI_bullet6.setVisible(true);
+				this.UI_bullet5.setVisible(true);
+				this.UI_bullet4.setVisible(true);
+				this.UI_bullet3.setVisible(true);
+				this.UI_bullet2.setVisible(true);
+				this.UI_bullet1.setVisible(true);
 			}
 
 		//Inventaire
@@ -492,21 +539,74 @@ class test extends Phaser.Scene {
 			}
 
 		//PVs
+			if(this.health == 5)
+			{
+				this.vie6.setVisible(false);
+			}
 			if(this.health == 4)
 			{
-				this.vie3.setVisible(false);
+				this.vie5.setVisible(false);
+			}
+			if(this.health == 3)
+			{
+				this.vie4.setVisible(false);
 			}
 			if(this.health == 2)
 			{
+				this.vie3.setVisible(false);
+			}
+			if(this.health == 1) 
+			{
 				this.vie2.setVisible(false);
 			}
-			if(this.health == 0) 
+			if(this.health == 0)
 			{
-				this.vie1.setVisible(false);
-				
+				this.vie1.setVisible(false);				
 				this.physics.pause();
 			    this.player.setTint(0xff0000);
 			}
+
+		//Nombre de munitions
+			if(this.nAmmo <= 75)
+			{
+				this.ammoA.setVisible(false);
+			}
+			if(this.nAmmo <= 50)
+			{
+				this.ammoB.setVisible(false);
+			}
+			if(this.nAmmo <= 0)
+			{
+				this.ammoC.setVisible(false);
+			}
+
+		//Nombre de balles
+			if(this.ammo == 5)
+			{
+				this.UI_bullet6.setVisible(false);
+			}
+			if(this.ammo == 4)
+			{
+				this.UI_bullet5.setVisible(false);
+			}
+			if(this.ammo == 3)
+			{
+				this.UI_bullet4.setVisible(false);
+			}
+			if(this.ammo == 2)
+			{
+				this.UI_bullet3.setVisible(false);
+			}
+			if(this.ammo == 1) 
+			{
+				this.UI_bullet2.setVisible(false);
+			}
+			if(this.ammo == 0)
+			{
+				this.UI_bullet1.setVisible(false);
+			}
+
+
 
 		//Destruction des balles
 
