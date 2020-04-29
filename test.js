@@ -9,13 +9,13 @@ class test extends Phaser.Scene {
 
 	preload() {
 		//Characters
-			this.load.spritesheet('idleR','assets/idleR.png',{frameWidth: 77, frameHeight: 50});
-			this.load.spritesheet('idleY','assets/idleY.png',{frameWidth: 26, frameHeight: 45});
+			this.load.spritesheet('idleR','assets/Characters/idleR.png',{frameWidth: 77, frameHeight: 50});
+			this.load.spritesheet('idleY','assets/Characters/idleY.png',{frameWidth: 26, frameHeight: 45});
 			this.load.spritesheet('ennemiA','assets/Characters/ennemiA.png',{frameWidth: 60, frameHeight: 60});
 			this.load.image('ennemiB','assets/Characters/ennemiB.png');
 			this.load.image('perso','assetsProto/purple.png');
 
-		//UI - État
+		//HUD - État
 			this.load.image('cursor','assetsProto/red.png');
 
 			this.load.image('6vie', 'assets/UI/Etat/6vie.png');
@@ -39,11 +39,12 @@ class test extends Phaser.Scene {
 			this.load.image('3bullet', 'assets/UI/Etat/UI_bullet3.png');
 			this.load.image('2bullet', 'assets/UI/Etat/UI_bullet2.png');
 			this.load.image('1bullet', 'assets/UI/Etat/UI_bullet1.png');
-			this.load.image('0bullet', 'assets/UI/Etat/UI_bullet0.png');
 
 			this.load.image('corner', 'assets/UI/Etat/UI_object.png');
 			this.load.image('uiObjUp','assets/UI/Etat/objet1.png');
 
+		//HUD - Inventaire
+		
 		//Environnement
 			this.load.image('background','assetsProto/sky.png');
 			this.load.image('trigger','assetsProto/noir.png');
@@ -59,12 +60,12 @@ class test extends Phaser.Scene {
 			this.load.image('objUp','assets/Items/objet1.png');
 			this.load.image('vie','assets/Items/cVie.png');
 
-		this.load.image('bullet','assetsProto/bullet.png');
+		this.load.image('bullet','assetsProto/orange.png');
 
-		//Plugin - Tableau
-		var url;
-		url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexgridtableplugin.min.js';
-		this.load.plugin('rexgridtableplugin', url, true);
+		//Plugin - Tableau [Inventaire]
+			var url;
+			url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexgridtableplugin.min.js';
+			this.load.plugin('rexgridtableplugin', url, true);
 	}
 
 	create() {
@@ -83,10 +84,10 @@ class test extends Phaser.Scene {
 		//Caméra & Joueur
 		    this.cameras.main.setBounds(0, 0, 6250, 3000);
 		    this.physics.world.setBounds(0, 0, 6250, 3000);
-		    this.player = this.physics.add.sprite(1700,700,'idleR');
-			this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
-	 	   	//this.player = this.physics.add.sprite(5800,2500,'idleR');
+	 	   	this.player = this.physics.add.sprite(5800,2500,'idleR');
 	   		this.player.setCollideWorldBounds(true);
+	   		this.groupeBullets = this.physics.add.group();
+			this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
 
 	   	//Object - Environnmeet
 		    this.chest = this.physics.add.sprite(1823,739, 'chest').setImmovable(true);
@@ -122,8 +123,7 @@ class test extends Phaser.Scene {
 			this.lockers = this.physics.add.staticGroup();
 		
 			this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
-
-		
+	
 		//this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyBullet, callbackScope: this, loop: true });
 			
 		//Animations
@@ -214,7 +214,7 @@ class test extends Phaser.Scene {
 			//this.createBullet = this.time.addEvent({ delay: this.delayBullet, callback: shootPlayer, callbackScope: this, loop: true });
 		    this.ennemiABullets = this.physics.add.group();
 		   
-		    ////EnnemiB
+		    //EnnemiB
 				this.ennemiB = this.physics.add.group({
 			        key: 'ennemiB',	
 			    });
@@ -260,8 +260,7 @@ class test extends Phaser.Scene {
  
 		/*Ensemble des fonctions*/
 			//System de tir - Joueur
-				this.groupeBullets = this.physics.add.group();
-
+				
 				this.input.on('pointermove', function (pointer)
 			    {
 			    	this.cursor.setVisible(true).setPosition(pointer.worldX, pointer.worldY).setScrollFactor(0);
