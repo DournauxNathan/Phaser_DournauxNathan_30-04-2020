@@ -8,17 +8,16 @@ class test extends Phaser.Scene {
 	}
 
 	preload() {
-		//Spritesheets
+		//Characters
 			this.load.spritesheet('idleR','assets/idleR.png',{frameWidth: 77, frameHeight: 50});
 			this.load.spritesheet('idleY','assets/idleY.png',{frameWidth: 26, frameHeight: 45});
-
-
-		this.load.image('background','assetsProto/sky.png');
-		this.load.image('perso','assetsProto/purple.png');
-		this.load.image('ennemi','assetsProto/red.png');
-		this.load.image('cursor','assetsProto/red.png');
+			this.load.spritesheet('ennemiA','assets/Characters/ennemiA.png',{frameWidth: 60, frameHeight: 60});
+			this.load.image('ennemiB','assets/Characters/ennemiB.png');
+			this.load.image('perso','assetsProto/purple.png');
 
 		//UI - État
+			this.load.image('cursor','assetsProto/red.png');
+
 			this.load.image('6vie', 'assets/UI/Etat/6vie.png');
 			this.load.image('5vie', 'assets/UI/Etat/5vie.png');
 			this.load.image('4vie', 'assets/UI/Etat/4vie.png');
@@ -28,7 +27,7 @@ class test extends Phaser.Scene {
 			this.load.image('0vie', 'assets/UI/Etat/0vie.png');
 
 			this.load.image('uiKey', 'assets/UI/Etat/key2.png');
-			this.load.image('money','assets/UI_soul.png');
+			this.load.image('money','assets/UI/Etat/UI_soul.png');
 
 			this.load.image('hAmmo', 'assets/UI/Etat/hAmmo.png');
 			this.load.image('mAmmo', 'assets/UI/Etat/mAmmo.png');
@@ -43,25 +42,24 @@ class test extends Phaser.Scene {
 			this.load.image('0bullet', 'assets/UI/Etat/UI_bullet0.png');
 
 			this.load.image('corner', 'assets/UI/Etat/UI_object.png');
+			this.load.image('uiObjUp','assets/UI/Etat/objet1.png');
 
+		//Environnement
+			this.load.image('background','assetsProto/sky.png');
+			this.load.image('trigger','assetsProto/noir.png');
+			this.load.image('chest','assets/Environnement/chest.png');
+			this.load.image('box','assets/Environnement/noir.png');
+			this.load.image('door','assets/Environnement/door.png');
+			this.load.image('locker1','assets/Environnement/thorns.png');
+			this.load.image('locker2','assets/Environnement/thorns2.png');
 
-		this.load.image('munition','assetsProto/ammo.png');
+		//Items
+			this.load.image('cKeys','assets/Items/key2.png');
+			this.load.image('munition','assets/Items/ammo.png');
+			this.load.image('objUp','assets/Items/objet1.png');
+			this.load.image('vie','assets/Items/cVie.png');
+
 		this.load.image('bullet','assetsProto/bullet.png');
-
-		this.load.image('littleKey','assetsProto/gray.png');
-		
-		this.load.image('chest','assetsProto/white.png');
-		this.load.image('box','assetsProto/noir.png');
-		this.load.image('door','assetsProto/noir.png');
-		this.load.image('locker','assetsProto/platform.png');
-		this.load.image('objUp','assetsProto/bleu.png');
-
-		this.load.image('fluffy','assetsProto/item.png');
-
-		this.load.image('trigger','assetsProto/noir.png');
-
-		this.load.image('grid','assetsProto/grid.png');
-
 
 		//Plugin - Tableau
 		var url;
@@ -80,14 +78,21 @@ class test extends Phaser.Scene {
 			this.isInventoryOpen = 0; // - booléen_inventaire: 0 = fermé / 1 = ouvert
 			this.delayBullet = 3000;
 
-	    
-	    this.add.image(0,0,'background').setOrigin(0,0);
-	    this.player = this.physics.add.sprite(5800,2500,'idleR');
-	    this.chest = this.physics.add.sprite(50,510, 'chest').setImmovable(true);
-	    this.moveBox = this.physics.add.sprite(-100,510, 'box');
-	    this.door = this.physics.add.sprite(-100, 0, 'door').setImmovable(true);
+		this.add.image(0,0,'background').setOrigin(0,0);
 
-	    this.onTrigger = this.physics.add.image(600,500, 'trigger');
+		//Caméra & Joueur
+		    this.cameras.main.setBounds(0, 0, 6250, 3000);
+		    this.physics.world.setBounds(0, 0, 6250, 3000);
+		    this.player = this.physics.add.sprite(1700,700,'idleR');
+			this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+	 	   	//this.player = this.physics.add.sprite(5800,2500,'idleR');
+	   		this.player.setCollideWorldBounds(true);
+
+	   	//Object - Environnmeet
+		    this.chest = this.physics.add.sprite(1823,739, 'chest').setImmovable(true);
+		    this.moveBox = this.physics.add.sprite(1760,690, 'box');
+		    this.door = this.physics.add.sprite(5840, 1000	, 'door').setImmovable(true).setScale(1.5);
+		    this.onTrigger = this.physics.add.image(4705,2100, 'trigger');
 
 	    //Ui - État
 		    this.vie6 = this.add.image(40,40,'6vie').setScale(1.25).setScrollFactor(0);
@@ -105,20 +110,20 @@ class test extends Phaser.Scene {
 			this.ammoB = this.add.image(710,30,'mAmmo').setScale(2).setScrollFactor(0);
 			this.ammoC = this.add.image(710,30,'lAmmo').setScale(2).setScrollFactor(0);
 
-			this.UI_bullet6 = this.add.image(740,70,'6bullet').setScale(1.25).setScrollFactor(0);
-		    this.UI_bullet5 = this.add.image(740,70,'5bullet').setScale(1.25).setScrollFactor(0);
-			this.UI_bullet4 = this.add.image(740,70,'4bullet').setScale(1.25).setScrollFactor(0);
-			this.UI_bullet3 = this.add.image(740,70,'3bullet').setScale(1.25).setScrollFactor(0);
-			this.UI_bullet2 = this.add.image(740,70,'2bullet').setScale(1.25).setScrollFactor(0);
-			this.UI_bullet1 = this.add.image(740,70,'1bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet6 = this.add.image(740,70	,'6bullet').setScale(1.25).setScrollFactor(0);
+		    this.UI_bullet5 = this.add.image(740,70	,'5bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet4 = this.add.image(740,70	,'4bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet3 = this.add.image(740,70	,'3bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet2 = this.add.image(740,70	,'2bullet').setScale(1.25).setScrollFactor(0);
+			this.UI_bullet1 = this.add.image(740,70	,'1bullet').setScale(1.25).setScrollFactor(0);
 
 			this.corner = this.add.image(2,530,'corner').setOrigin(0,0).setScale(2).setScrollFactor(0);
-
-		this.lockers = this.physics.add.staticGroup();
+			this.cornerObj = this.add.image(5,534,'uiObjUp').setOrigin(0,0).setScale(2).setScrollFactor(0).setVisible(false);
+			this.lockers = this.physics.add.staticGroup();
 		
-		this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
+			this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
 
-		this.groupeBullets = this.physics.add.group();
+		
 		//this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyBullet, callbackScope: this, loop: true });
 			
 		//Animations
@@ -140,81 +145,146 @@ class test extends Phaser.Scene {
 		//Collectibles
 		    this.nSoul = 0;
 
-		    this.nAmmo = 100;
 			this.ammo = 6;
 
-			this.fluffyWhim = this.physics.add.group({
-				key: 'fluffy',
-			});
+			this.nAmmo = 100;
+			this.cAmmo = this.physics.add.group({
+		        key: 'munition',
+		        setScale: {x: 1.5, y: 2.5},
+		    });
+		    this.cAmmo.create(200, 510, 'munition');
 
-			this.littleKey = this.physics.add.group({
-				key: 'littleKey',
+			this.cHealth = this.physics.add.group({
+				key: 'vie',
+			});
+			this.cHealth1 =  this.cHealth.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'vie');
+			this.cHealth2 =  this.cHealth.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'vie').setScale(2);
+
+			this.nKeys = 0;
+			this.cKeys = this.physics.add.group({
+				key: 'cKeys',
 				setXY: {x: 250, y:250}
 			});
 
-			this.nlittleKey = 0;
-
-			this.fluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
-			this.bigFluffyCockail =  this.fluffyWhim.create(Phaser.Math.Between(0, 300), Phaser.Math.Between(0, 300), 'fluffy');
-
-			this.objUpgrade = this.physics.add.sprite(200,510,'objUp');
 			this.isUsable = 0;
-
-		//Tir
-			this.input.on('pointermove', function (pointer)
-		    {
-		    	this.cursor.setVisible(true).setPosition(pointer.x, pointer.y).setScrollFactor(0);
-		    }, this);
-
-		    this.input.on('pointerdown', function (pointer)  
-		    {	
-		    	if (pointer.leftButtonDown()) 
-		    	{
-
-		    		if (this.nAmmo > 0) 
-		    		{
-		    			if (this.ammo > 0) 
-				    	{
-				    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet');
-				    		bullet.setVelocity(pointer.x, pointer.y); 
-					        this.physics.moveToObject(bullet, pointer, 400);
-					        this.ammo--;
-				    	}
-		    		}
-		    		
-		    	}
-		    }, this);
-
-		this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
-
-		this.gizmos = this.physics.add.group();
+			this.objUpgrade = this.physics.add.sprite(5846,1405,'objUp');
 
 		//IA
 			//EnnemiA
-			this.ennemiA = this.physics.add.group({
-		        key: 'ennemi',
-		        repeat: Phaser.Math.Between(1, 1),
-		        setXY: { x: Phaser.Math.Between(0, 350), y: Phaser.Math.Between(0, 350),  stepX: 110 ,  stepY: 110 }	
-		    });
+				this.ennemiA = this.physics.add.group({
+			        key: 'ennemiA',	
+			    });
+			    //Zone 9 
+				this.ennemiA.create(266,1966,'ennemiA');
+			   	this.ennemiA.create(373,2513,'ennemiA');
+			   	this.ennemiA.create(786,1753,'ennemiA');
+			   	//Zone 8 
+			   	this.ennemiA.create(2000,2586,'ennemiA');
+			   	this.ennemiA.create(1886,2186,'ennemiA');
+			   	this.ennemiA.create(1466,2579,'ennemiA');
+			   	this.ennemiA.create(1566,2006,'ennemiA');
+			   	//Zone 2
+			   	this.ennemiA.create(4686,1826,'ennemiA');
+			   	this.ennemiA.create(4113,2200,'ennemiA');
+			   	//Zone4
+			   	this.ennemiA.create(3738,741,'ennemiA');
+			   	this.ennemiA.create(2784,495,'ennemiA');
+			   	this.ennemiA.create(3384,274,'ennemiA');
+			   	this.ennemiA.create(3831,1054,'ennemiA');
+			   	this.ennemiA.create(4451,521,'ennemiA');
+			   	this.ennemiA.create(4731,854,'ennemiA');
+			   	//Zone 6
+			   	this.ennemiA.create(5841,219,'ennemiA');
+			   	this.ennemiA.create(6085,553,'ennemiA');
+
+
+			   	this.anims.create({
+					key:'burn',
+					frames: this.anims.generateFrameNumbers('ennemiA', {rupeet: 0, end: 4}),
+					frameRate: 3,
+					repeat: -1
+				});
+
+
 		    
 		    this.ennemiA.children.iterate(function (ennemiA) {
 		        ennemiA.health = Phaser.Math.Between(2, 5);			        
 		    });
 
-			this.createBullet = this.time.addEvent({ delay: this.delayBullet, callback: shootPlayer, callbackScope: this, loop: true });
+			//this.createBullet = this.time.addEvent({ delay: this.delayBullet, callback: shootPlayer, callbackScope: this, loop: true });
 		    this.ennemiABullets = this.physics.add.group();
 		   
+		    ////EnnemiB
+				this.ennemiB = this.physics.add.group({
+			        key: 'ennemiB',	
+			    });
+			    //Zone 9 
+				this.ennemiB.create(511,2086,'ennemiB');
+			   	//Zone 6
+			   	this.ennemiB.create(5810,400,'ennemiB');
+ 
+		    this.ennemiB.children.iterate(function (ennemiB) {
+		        ennemiB.health = Phaser.Math.Between(10, 15);			        
+		    });
+
+			//this.createBullet = this.time.addEvent({ delay: this.delayBullet, callback: shootPlayer, callbackScope: this, loop: true });
+		    this.ennemiBBullets = this.physics.add.group();
+
+
 		/*Texte*/
 			//Clef
-		this.keyText = this.add.text(50, 85, ' ', { fontSize: '35px', fill: '#fff' }).setScrollFactor(0);
-		this.keyText.setText('' + this.nlittleKey);
+				this.keyText = this.add.text(50, 85, ' ', { fontSize: '35px', fill: '#fff' }).setScrollFactor(0);
+				this.keyText.setText('' + this.nKeys);
 			//Monnaie
-		this.soulText = this.add.text(130, 85, ' ', { fontSize: '35px', fill: '#fff' }).setScrollFactor(0);
-		this.soulText.setText('' + this.nSoul);
+				this.soulText = this.add.text(130, 85, ' ', { fontSize: '35px', fill: '#fff' }).setScrollFactor(0);
+				this.soulText.setText('' + this.nSoul);
 
-		 
+		//Ensembles de Colliders & Overlaps
+			//Collider
+				this.physics.add.collider(this.chest, this.player, openChest, null,this);
+				this.physics.add.collider(this.door, this.player, openDoor, null,this);
+				this.physics.add.collider(this.lockers, this.player);
+				this.physics.add.collider(this.chest, this.moveBox);
+				this.physics.add.collider(this.moveBox, this.player, pushBox, null,this);
+			//Overlap
+				this.physics.add.overlap(this.onTrigger, this.player, lockRoom, null,this);
+				this.physics.add.overlap(this.cKeys, this.player, collectKeys, null,this);
+				this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
+				this.physics.add.overlap(this.cHealth2, this.player, collectHealth2, null,this);
+				this.physics.add.overlap(this.cHealth1, this.player, collectHealth1, null,this);
+				this.physics.add.overlap(this.ennemiABullets, this.player, hitPlayer, null,this);
+				this.physics.add.overlap(this.groupeBullets, this.ennemiA, hitEnnemi, null,this);
+				this.physics.add.overlap(this.groupeBullets, this.ennemiB, hitEnnemiB, null,this);
+				this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
+				this.physics.add.overlap(this.player, this.cAmmo, collectAmmo, null,this);
  
 		/*Ensemble des fonctions*/
+			//System de tir - Joueur
+				this.groupeBullets = this.physics.add.group();
+
+				this.input.on('pointermove', function (pointer)
+			    {
+			    	this.cursor.setVisible(true).setPosition(pointer.worldX, pointer.worldY).setScrollFactor(0);
+			    }, this);
+
+			    this.input.on('pointerdown', function (pointer)
+			    {	
+
+			    	if (pointer.leftButtonDown()) 
+			    	{
+			    		if (this.nAmmo > 0) 
+			    		{
+			    			if (this.ammo > 0) 
+					    	{
+					    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet');
+					    		bullet.setVelocity(pointer.worldX,pointer.worldY); 
+						        this.physics.moveTo(bullet, pointer.worldX, pointer.worldY, 400);
+						        this.ammo--;
+					    	}
+			    		}
+			    	}
+			    }, this);
+
 			//Inventaire
 				function Inventory(scene, cell) 
 				{
@@ -242,19 +312,30 @@ class test extends Phaser.Scene {
 
 			    this.table.setVisible(false).setScrollFactor(0).setInteractive();	
 
-			//Collision entre une balle et un ennemi
+			//Collision entre une balle et un ennemi - A
 				function hitEnnemi(bullet, ennemiA) 
 				{
 					ennemiA.health--;
 					bullet.destroy(true);
 					
-
 					if (ennemiA.health == 0) 
 					{
 						ennemiA.destroy();
 						var spawnCollect = Phaser.Math.Between(0, 30);
 
-						if(spawnCollect <= 15 || spawnCollect > 18)
+						if(this.nAmmo <= 35)
+						{
+							this.cAmmo = this.physics.add.group({
+						        key: 'munition',
+						        repeat: Phaser.Math.Between(1, 3),
+						        setScale: {x: 1.5, y: 2.5},
+						        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
+						    });
+
+						   
+							this.physics.add.overlap(this.player, this.cAmmo, collectAmmo, null,this);
+						}
+						else if(spawnCollect <= 15 || spawnCollect >= 18)
 						{
 							this.cSoul = this.physics.add.group({
 						        key: 'money',
@@ -264,20 +345,26 @@ class test extends Phaser.Scene {
 
 						    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
 						}
-
-						if(spawnCollect > 15 && spawnCollect < 18)
-						{
-							this.cAmmo = this.physics.add.group({
-						        key: 'munition',
-						        repeat: Phaser.Math.Between(1, 3),
-						        setXY: { x: Phaser.Math.Between(ennemiA.x,ennemiA.x+50), y: Phaser.Math.Between(ennemiA.y,ennemiA.y+50)},
-						    });
-
-						    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
-						}
 					}
 				}
+			
+			//Collision entre une balle et un ennemi - B
+				function hitEnnemiB(bullet, ennemiB) 
+				{
+					ennemiB.health--;
+					bullet.destroy(true);
+					
 
+					if (ennemiB.health == 0) 
+					{
+						ennemiB.destroy();
+						
+						var cHealth2 = this.cHealth.create(Phaser.Math.Between(ennemiB.x,ennemiB.x+50), Phaser.Math.Between(ennemiB.y,ennemiB.y+50), 'vie').setScale(2);
+					
+						var key =  this.cKeys.create(Phaser.Math.Between(ennemiB.x,ennemiB.x+50), Phaser.Math.Between(ennemiB.y,ennemiB.y+50)	, 'cKeys');
+					}
+				}
+			
 			//Collision entre le joueur et une balle
 				function hitPlayer(player, groupeBullets)
 				{
@@ -294,6 +381,19 @@ class test extends Phaser.Scene {
 					this.soulText.setText('' + this.nSoul);
 				}
 
+			//Collision entre le joueur et un collectible - munitions
+				function collectAmmo(player, munition) 
+				{
+					munition.destroy();
+					this.nAmmo += 30;
+
+					if (this.nAmmo >= 0) { this.ammoC.setVisible(true); }
+
+					if (this.nAmmo >= 50) { this.ammoB.setVisible(true); }
+
+					if (this.nAmmo >= 75) { this.ammoA.setVisible(true); }
+
+				}
 
 				function shootPlayer(ennemiA)
 				{
@@ -305,28 +405,28 @@ class test extends Phaser.Scene {
 				}
 
 			//Collision entre le joueur et un collectible - vie
-				function LuxuryCocktail()
+				function collectHealth1()
 				{
 					if (this.health < this.maxHealth)
 					{
-						this.fluffyCockail.destroy();
+						this.cHealth1.destroy();
 						this.health++;
 
-						if (this.health == 4 || this.health == 3) {
-							this.vie4.setVisible(true);
-						}
+						if (this.health == 4) { this.vie4.setVisible(true); }
 
-						if (this.health == this.maxHealth || this.health == 5) {
-							this.vie6.setVisible(true);
-						}
+						if (this.health == 3) { this.vie3.setVisible(true); }
+
+						if (this.health == 5) { this.vie5.setVisible(true); }
+
+						if (this.health == this.maxHealth) { this.vie6.setVisible(true);}
 					}
 				}
 
-				function BigLuxuryCocktail()
+				function collectHealth2()
 				{
 					if (this.health < this.maxHealth)
 					{
-						this.bigFluffyCockail.destroy();
+						this.cHealth1.destroy();
 						this.health+=2;
 
 						if (this.health == 4 || this.health == 3) {
@@ -344,54 +444,44 @@ class test extends Phaser.Scene {
 				{
 					this.isUsable = 1;
 					this.objUpgrade.destroy();
-					
+					this.cornerObj.setVisible(true);
 				}
 
 			//Collision entre le joueur et un collectible - clef
-				function collectKeys(player, littleKey)
+				function collectKeys(player, cKeys)
 				{
-					littleKey.disableBody(true,true);
-					this.nlittleKey++;
-					this.keyText.setText('' + this.nlittleKey);
+					cKeys.disableBody(true,true);
+					this.nKeys++;
+					this.keyText.setText('' + this.nKeys);
 
 				}
 
 			//Collision entre le joueur et un objet - coffre
 				function openChest()
 				{
-					if (this.nlittleKey > 0) 
+					if (this.nKeys > 0) 
 					{
 						this.chest.setTint(0x00ff00);
+						this.nKeys--;
+						this.keyText.setText('' + this.nKeys);
 						console.log("coffre ouvert");
 					}
 				}
 
-			//Ouverture d'un coffre - condition avoir au moins une clef
-				function openChest()
-				{
-					if (this.nlittleKey > 0) 
-					{
-						this.chest.setTint(0x00ff00);
-						this.nlittleKey--;
-						this.keyText.setText('' + this.nlittleKey);
-						console.log("coffre ouvert");
-					}
-				}
-
-			//Collision entre le joueur et un objet - door
+			//Ouverture d'une porte - condition avoir au moins une clef
 				function openDoor()
 				{
-					if (this.nlittleKey > 0) 
+					if (this.nKeys > 0) 
 					{
 						this.door.destroy();
-						this.nlittleKey--;
-						this.keyText.setText('' + this.nlittleKey);
+						this.nKeys--;
+						this.keyText.setText('' + this.nKeys);
 						console.log("Porte ouverte");
 					}
 				}
 
 			//Collision entre le joueur et un objet - boite
-				function pushBox()
+				function pushBox(player, moveBox)
 				{
 					//En X
 						if (this.moveBox.body.touching.right) 
@@ -427,33 +517,22 @@ class test extends Phaser.Scene {
 				{	
 					if (this.ennemiA.countActive(true) != 0) 
 					{
-						this.lockers.create(600, 200, 'locker');
-						this.lockers.create(600, 800, 'locker');
-						this.lockers.create(300, 500, 'locker');
-						this.lockers.create(900, 500, 'locker');
+						this.lockers.create(3180, 1300, 'locker1');
+						this.lockers.create(3190, 940, 'locker1');
+						this.lockers.create(4566, 1360, 'locker1');
+						this.lockers.create(4520, 1600, 'locker1');
+
+						this.lockers.create(950, 2150, 'locker2');
+						this.lockers.create(3980, 1906, 'locker2');
+						this.lockers.create(5000, 620, 'locker2');
+						this.lockers.create(5333, 420, 'locker2');
+						this.lockers.create(2520, 330, 'locker2');
+						this.lockers.create(2079, 310, 'locker2');
 					}
 				}
-
-		//Ensembles de Colliders & Overlaps
-			//Collider
-				this.physics.add.collider(this.chest, this.player, openChest, null,this);
-				this.physics.add.collider(this.door, this.player, openDoor, null,this);
-				this.physics.add.collider(this.lockers, this.player);
-				this.physics.add.collider(this.moveBox, this.player, pushBox, null,this);
-			//Overlap
-				this.physics.add.overlap(this.onTrigger, this.player, lockRoom, null,this);
-				this.physics.add.overlap(this.littleKey, this.player, collectKeys, null,this);
-				this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
-				this.physics.add.overlap(this.bigFluffyCockail, this.player, BigLuxuryCocktail, null,this);
-				this.physics.add.overlap(this.fluffyCockail, this.player, LuxuryCocktail, null,this);
-				this.physics.add.overlap(this.ennemiABullets, this.player, hitPlayer, null,this);
-				this.physics.add.overlap(this.groupeBullets, this.ennemiA, hitEnnemi, null,this);
 	}
 
 	update() {
-		//Console.logs
-			//console.log(this.isInventoryOpen);
-
 		//Déplacement
 			if (this.keys.Q.isDown)
 			{
@@ -528,17 +607,16 @@ class test extends Phaser.Scene {
 		//Capacités
 			if (this.isUsable == 1 && Phaser.Input.Keyboard.JustDown(this.useObject))
 			{
-				console.log("Vous utilisé un objet");
 				this.ennemiABullets.setVelocity(1000);
-				//this.time.events.add(Phaser.Timer.SECOND * 4, this.ennemiABullets.setVelocity(300), this);
-				this.isUsable = 0;
+				//this.isUsable = 0;
 			}
 			else if (this.isUsable == 0 && Phaser.Input.Keyboard.JustDown(this.useObject))
 			{
-				console.log("Vous n'avez aucun objet");
+                console.log("X: " + this.player.x);
+				console.log("Y:" + this.player.y);
 			}
 
-		//PVs
+		//Nombre de PVs
 			if(this.health == 5)
 			{
 				this.vie6.setVisible(false);
@@ -566,7 +644,7 @@ class test extends Phaser.Scene {
 			    this.player.setTint(0xff0000);
 			}
 
-		//Nombre de munitions
+		//Nombre de munitions	
 			if(this.nAmmo <= 75)
 			{
 				this.ammoA.setVisible(false);
@@ -606,18 +684,12 @@ class test extends Phaser.Scene {
 				this.UI_bullet1.setVisible(false);
 			}
 
-
-
 		//Destruction des balles
 
+		//Destruction des bloqueurs d'avancement - lockers
 		if (this.ennemiA.countActive(true) === 0)
 		{
 			this.lockers.destroy(true);
 		}
-
-
-
-
-
 	}
 }
