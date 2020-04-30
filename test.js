@@ -73,6 +73,7 @@ class test extends Phaser.Scene {
 			this.speed = 400; //Vitesse du joueur
 			this.health = 6;  //Vie du joueur
 			this.maxHealth = 6;  //Vie maximal du joueur
+			this.shoot = 400;
 			this.keys = this.input.keyboard.addKeys('Z,Q,S,D,R'); //Input de déplacent / intérargir / rechargement 
 			this.useObject = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); //Utilisation d'object
 			this.openInventory = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I); //Inventaire
@@ -82,18 +83,22 @@ class test extends Phaser.Scene {
 		this.add.image(0,0,'background').setOrigin(0,0);
 
 		//Caméra & Joueur
-		    this.cameras.main.setBounds(0, 0, 6250, 3000);
+		    
 		    this.physics.world.setBounds(0, 0, 6250, 3000);
 	 	   	this.player = this.physics.add.sprite(5800,2500,'idleR');
 	   		this.player.setCollideWorldBounds(true);
 	   		this.groupeBullets = this.physics.add.group();
+	   		this.cameras.main.setBounds(0, 0, 6250, 3000, this.player);
 			this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+
+			this.nKill = 0;
 
 	   	//Object - Environnmeet
 		    this.chest = this.physics.add.sprite(1823,739, 'chest').setImmovable(true);
 		    this.moveBox = this.physics.add.sprite(1760,690, 'box');
 		    this.door = this.physics.add.sprite(5840, 1000	, 'door').setImmovable(true).setScale(1.5);
-		    this.onTrigger = this.physics.add.image(4705,2100, 'trigger');
+		    this.onTrigger = this.physics.add.image(5013,2146, 'trigger').setScale(2,3).setVisible(false);
+ 			this.lockers = this.physics.add.staticGroup();
 
 	    //Ui - État
 		    this.vie6 = this.add.image(40,40,'6vie').setScale(1.25).setScrollFactor(0);
@@ -120,12 +125,9 @@ class test extends Phaser.Scene {
 
 			this.corner = this.add.image(2,530,'corner').setOrigin(0,0).setScale(2).setScrollFactor(0);
 			this.cornerObj = this.add.image(5,534,'uiObjUp').setOrigin(0,0).setScale(2).setScrollFactor(0).setVisible(false);
-			this.lockers = this.physics.add.staticGroup();
-		
-			this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
-	
-		//this.destroyEvent = this.time.addEvent({ delay: 2500, callback: destroyBullet, callbackScope: this, loop: true });
 			
+			this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
+		
 		//Animations
 			//Joueur
 				this.anims.create({
@@ -175,27 +177,27 @@ class test extends Phaser.Scene {
 			        key: 'ennemiA',	
 			    });
 			    //Zone 9 
-				this.ennemiA.create(266,1966,'ennemiA');
-			   	this.ennemiA.create(373,2513,'ennemiA');
-			   	this.ennemiA.create(786,1753,'ennemiA');
+				this.depY1 = this.ennemiA.create(266,1966,'ennemiA');
+			   	this.depY2 = this.ennemiA.create(373,2513,'ennemiA');
+			   	this.depX1 = this.ennemiA.create(786,1753,'ennemiA');
 			   	//Zone 8 
-			   	this.ennemiA.create(2000,2586,'ennemiA');
-			   	this.ennemiA.create(1886,2186,'ennemiA');
-			   	this.ennemiA.create(1466,2579,'ennemiA');
-			   	this.ennemiA.create(1566,2006,'ennemiA');
+			   	this.depX2 = this.ennemiA.create(2000,2586,'ennemiA');
+			   	this.depY3 = this.ennemiA.create(1886,2186,'ennemiA');
+			   	this.depX3 = this.ennemiA.create(1466,2579,'ennemiA');
+			   	this.depY4 = this.ennemiA.create(1566,2006,'ennemiA');
 			   	//Zone 2
-			   	this.ennemiA.create(4686,1826,'ennemiA');
-			   	this.ennemiA.create(4113,2200,'ennemiA');
+			   	this.depX5 = this.ennemiA.create(4686,1826,'ennemiA');
+			   	this.depY5 = this.ennemiA.create(4113,2200,'ennemiA');
 			   	//Zone4
-			   	this.ennemiA.create(3738,741,'ennemiA');
-			   	this.ennemiA.create(2784,495,'ennemiA');
-			   	this.ennemiA.create(3384,274,'ennemiA');
-			   	this.ennemiA.create(3831,1054,'ennemiA');
-			   	this.ennemiA.create(4451,521,'ennemiA');
-			   	this.ennemiA.create(4731,854,'ennemiA');
+			   	this.depX7 = this.ennemiA.create(3738,741,'ennemiA');
+			   	this.depY7 = this.ennemiA.create(2784,495,'ennemiA');
+			   	this.depX8 = this.ennemiA.create(3384,274,'ennemiA');
+			   	this.depY8 = this.ennemiA.create(3831,1054,'ennemiA');
+			   	this.depY9 = this.ennemiA.create(4451,521,'ennemiA');
+			   	this.depX9 = this.ennemiA.create(4731,854,'ennemiA');
 			   	//Zone 6
-			   	this.ennemiA.create(5841,219,'ennemiA');
-			   	this.ennemiA.create(6085,553,'ennemiA');
+			   	this.depX6 = this.ennemiA.create(5841,219,'ennemiA');
+			   	this.depY6 = this.ennemiA.create(6085,553,'ennemiA');
 
 
 			   	this.anims.create({
@@ -205,14 +207,26 @@ class test extends Phaser.Scene {
 					repeat: -1
 				});
 
-
-		    
 		    this.ennemiA.children.iterate(function (ennemiA) {
-		        ennemiA.health = Phaser.Math.Between(2, 5);			        
+		        ennemiA.health = Phaser.Math.Between(2, 5);			       
 		    });
 
-			//this.createBullet = this.time.addEvent({ delay: this.delayBullet, callback: shootPlayer, callbackScope: this, loop: true });
-		    this.ennemiABullets = this.physics.add.group();
+		    var tweenY = this.tweens.add({
+		      	targets: [ this.depY1, this.depY2, this.depY3,this.depY4, this.depY5, this.depY6, this.depY7, this.depY8, this.depY9, this.depY10 ],
+		        y: '+=200',
+		        ease: 'Linear',
+		        yoyo: true,
+		        repeat: -1
+		    });
+
+		    var tweenX = this.tweens.add({
+		      	targets: [ this.depX1, this.depX2, this.depX3,this.depX4, this.depX5, this.depX6, this.depX7, this.depX8, this.depX9, this.depX10 ],
+		        x: '+=200',
+		        ease: 'Linear',
+		        yoyo: true,
+		        repeat: -1
+		    });
+
 		   
 		    //EnnemiB
 				this.ennemiB = this.physics.add.group({
@@ -226,10 +240,6 @@ class test extends Phaser.Scene {
 		    this.ennemiB.children.iterate(function (ennemiB) {
 		        ennemiB.health = Phaser.Math.Between(10, 15);			        
 		    });
-
-			//this.createBullet = this.time.addEvent({ delay: this.delayBullet, callback: shootPlayer, callbackScope: this, loop: true });
-		    this.ennemiBBullets = this.physics.add.group();
-
 
 		/*Texte*/
 			//Clef
@@ -252,7 +262,8 @@ class test extends Phaser.Scene {
 				this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
 				this.physics.add.overlap(this.cHealth2, this.player, collectHealth2, null,this);
 				this.physics.add.overlap(this.cHealth1, this.player, collectHealth1, null,this);
-				this.physics.add.overlap(this.ennemiABullets, this.player, hitPlayer, null,this);
+				this.physics.add.overlap(this.ennemiA, this.player, hitPlayer, null,this);
+				this.physics.add.overlap(this.ennemiB, this.player, hitPlayer, null,this);
 				this.physics.add.overlap(this.groupeBullets, this.ennemiA, hitEnnemi, null,this);
 				this.physics.add.overlap(this.groupeBullets, this.ennemiB, hitEnnemiB, null,this);
 				this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
@@ -260,10 +271,9 @@ class test extends Phaser.Scene {
  
 		/*Ensemble des fonctions*/
 			//System de tir - Joueur
-				
 				this.input.on('pointermove', function (pointer)
 			    {
-			    	this.cursor.setVisible(true).setPosition(pointer.worldX, pointer.worldY).setScrollFactor(0);
+			    	this.cursor.setVisible(true).setPosition(pointer.x, pointer.y).setScrollFactor(0);
 			    }, this);
 
 			    this.input.on('pointerdown', function (pointer)
@@ -277,10 +287,12 @@ class test extends Phaser.Scene {
 					    	{
 					    		var bullet = this.groupeBullets.create(this.player.x, this.player.y, 'bullet');
 					    		bullet.setVelocity(pointer.worldX,pointer.worldY); 
-						        this.physics.moveTo(bullet, pointer.worldX, pointer.worldY, 400);
+						        this.physics.moveTo(bullet, pointer.worldX, pointer.worldY, this.shoot);
 						        this.ammo--;
 					    	}
 			    		}
+
+
 			    	}
 			    }, this);
 
@@ -320,6 +332,7 @@ class test extends Phaser.Scene {
 					if (ennemiA.health == 0) 
 					{
 						ennemiA.destroy();
+						this.nKill++;
 						var spawnCollect = Phaser.Math.Between(0, 30);
 
 						if(this.nAmmo <= 35)
@@ -344,6 +357,33 @@ class test extends Phaser.Scene {
 
 						    this.physics.add.overlap(this.player, this.cSoul, collectSoul, null,this);
 						}
+
+						//Suppression des lockers fonction du nombre d'ennemis tués
+							if (this.nKill >= 2)
+							{
+								this.L1.destroy(true);
+								this.L2.destroy(true);
+								this.L3.destroy(true);
+							}
+							if (this.nKill >= 5)
+							{
+								this.L4.destroy(true);
+								this.L5.destroy(true);
+							}
+							if (this.nKill >= 10)
+							{
+								this.L9.destroy(true);
+							}
+							if (this.nKill >= 14)
+							{
+								this.L10.destroy(true);
+							}
+							if (this.nKill >= 17)
+							{
+								this.L6.destroy(true);
+								this.L7.destroy(true);
+								this.L8.destroy(true);
+							}
 					}
 				}
 			
@@ -365,11 +405,9 @@ class test extends Phaser.Scene {
 				}
 			
 			//Collision entre le joueur et une balle
-				function hitPlayer(player, groupeBullets)
+				function hitPlayer()
 				{
 					this.health--;
-					console.log(this.health);
-					groupeBullets.destroy(true);
 				}
 
 			//Collision entre le joueur et un collectible - argent
@@ -392,15 +430,6 @@ class test extends Phaser.Scene {
 
 					if (this.nAmmo >= 75) { this.ammoA.setVisible(true); }
 
-				}
-
-				function shootPlayer(ennemiA)
-				{
-					if (this.ennemiA.countActive(true) != 0) 
-					{
-			       		this.bullet = this.ennemiABullets.create(this.ennemiA.x, this.ennemiA.y, 'bullet');
-			        	this.physics.moveToObject(this.bullet, this.player, 300);
-					}
 				}
 
 			//Collision entre le joueur et un collectible - vie
@@ -455,7 +484,7 @@ class test extends Phaser.Scene {
 
 				}
 
-			//Collision entre le joueur et un objet - coffre
+			//Collision entre le joueur et un objet - coffre - condition avoir au moins une clef
 				function openChest()
 				{
 					if (this.nKeys > 0) 
@@ -463,11 +492,10 @@ class test extends Phaser.Scene {
 						this.chest.setTint(0x00ff00);
 						this.nKeys--;
 						this.keyText.setText('' + this.nKeys);
-						console.log("coffre ouvert");
 					}
 				}
 
-			//Ouverture d'une porte - condition avoir au moins une clef
+			//Collision entre le joueur et un objet - porte - condition avoir au moins une clef
 				function openDoor()
 				{
 					if (this.nKeys > 0) 
@@ -475,7 +503,6 @@ class test extends Phaser.Scene {
 						this.door.destroy();
 						this.nKeys--;
 						this.keyText.setText('' + this.nKeys);
-						console.log("Porte ouverte");
 					}
 				}
 
@@ -514,20 +541,17 @@ class test extends Phaser.Scene {
 			//Zone de trigger - des que le joueur entre dans une salle tout acces se ferme
 				function lockRoom()
 				{	
-					if (this.ennemiA.countActive(true) != 0) 
-					{
-						this.lockers.create(3180, 1300, 'locker1');
-						this.lockers.create(3190, 940, 'locker1');
-						this.lockers.create(4566, 1360, 'locker1');
-						this.lockers.create(4520, 1600, 'locker1');
-
-						this.lockers.create(950, 2150, 'locker2');
-						this.lockers.create(3980, 1906, 'locker2');
-						this.lockers.create(5000, 620, 'locker2');
-						this.lockers.create(5333, 420, 'locker2');
-						this.lockers.create(2520, 330, 'locker2');
-						this.lockers.create(2079, 310, 'locker2');
-					}
+					this.onTrigger.destroy();
+					this.L1 = this.lockers.create(4520, 1600, 'locker1');
+					this.L2 = this.lockers.create(4566, 1360, 'locker1');
+  					this.L3 = this.lockers.create(3980, 1906, 'locker2');
+					this.L4 = this.lockers.create(5000, 620, 'locker2');
+					this.L5 = this.lockers.create(5333, 420, 'locker2');
+					this.L6 = this.lockers.create(3180, 1300, 'locker1');
+					this.L7 = this.lockers.create(3190, 940, 'locker1');
+					this.L8 = this.lockers.create(2520, 330, 'locker2');
+					this.L9 = this.lockers.create(2079, 310, 'locker2');
+					this.L10 = this.lockers.create(950, 2150, 'locker2');
 				}
 	}
 
@@ -570,8 +594,6 @@ class test extends Phaser.Scene {
 				
 			}
 
-		//Déplacemet des ennemis
-	
 		//Rechargement
 			if(this.keys.R.isDown)
 			{
@@ -606,14 +628,13 @@ class test extends Phaser.Scene {
 		//Capacités
 			if (this.isUsable == 1 && Phaser.Input.Keyboard.JustDown(this.useObject))
 			{
-				this.ennemiABullets.setVelocity(1000);
+				this.shoot = 800;
 				//this.isUsable = 0;
 			}
-			else if (this.isUsable == 0 && Phaser.Input.Keyboard.JustDown(this.useObject))
+			/*else if (this.isUsable == 0 && Phaser.Input.Keyboard.JustDown(this.useObject))
 			{
-                console.log("X: " + this.player.x);
-				console.log("Y:" + this.player.y);
-			}
+                
+			}*/
 
 		//Nombre de PVs
 			if(this.health == 5)
@@ -681,14 +702,6 @@ class test extends Phaser.Scene {
 			if(this.ammo == 0)
 			{
 				this.UI_bullet1.setVisible(false);
-			}
-
-		//Destruction des balles
-
-		//Destruction des bloqueurs d'avancement - lockers
-		if (this.ennemiA.countActive(true) === 0)
-		{
-			this.lockers.destroy(true);
-		}
+			}		
 	}
 }
