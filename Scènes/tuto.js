@@ -3,9 +3,26 @@ class tuto extends Phaser.Scene {
         super("Tuto");
     }
 
-    init() {
+   /* 
+    Documentation cf 'test.js'[Proposition d'une synthaxe et nomenclature]
+	    
+	    Déclaraction de collectibles
+		this.cVariable;
+		le 'c' permet d'indiquer un collectible
+		
+		Déclarer un compteur
+		this.nVariable;
+		le 'n' permet d'indique un compteur (dans la cas dans score par exemple)
 
-	}
+		Déclarer des 'faux' booléen
+		this.isNomVariable
+		grâce au 'is' au identifie un état - Ma variable EST...
+
+		Différencier des variables identique par des lettres ou des chiffres
+		this.maVariableA ou this.maVariable1
+		this.maVariableA ou this.maVariable1
+		...
+	*/
 
 	preload() {
 		//Characters
