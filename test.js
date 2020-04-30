@@ -492,6 +492,7 @@ class test extends Phaser.Scene {
 						this.chest.setTint(0x00ff00);
 						this.nKeys--;
 						this.keyText.setText('' + this.nKeys);
+						this.scene.start('end');
 					}
 				}
 
