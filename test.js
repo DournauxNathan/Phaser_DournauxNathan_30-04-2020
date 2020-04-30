@@ -7,16 +7,15 @@ class test extends Phaser.Scene {
 
 	}
 
-	preload() {
+	preload() {	
 		//Characters
-			this.load.spritesheet('idleR','assets/Characters/idleR.png',{frameWidth: 77, frameHeight: 50});
-			this.load.spritesheet('idleY','assets/Characters/idleY.png',{frameWidth: 26, frameHeight: 45});
+			this.load.image('idleR','assets/Characters/playerRight.png');
+			this.load.image('idleY','assets/Characters/playerUp.png');
 			this.load.spritesheet('ennemiA','assets/Characters/ennemiA.png',{frameWidth: 60, frameHeight: 60});
 			this.load.image('ennemiB','assets/Characters/ennemiB.png');
-			this.load.image('perso','assetsProto/purple.png');
 
 		//HUD - État
-			this.load.image('cursor','assetsProto/red.png');
+			this.load.image('cursor','assets/UI/Etat/red.png');
 
 			this.load.image('6vie', 'assets/UI/Etat/6vie.png');
 			this.load.image('5vie', 'assets/UI/Etat/5vie.png');
@@ -46,8 +45,10 @@ class test extends Phaser.Scene {
 		//HUD - Inventaire
 		
 		//Environnement
-			this.load.image('background','assetsProto/sky.png');
-			this.load.image('trigger','assetsProto/noir.png');
+			this.load.image('background','assets/Environnement/_env001.png');
+			this.load.image('background2','assets/Environnement/_bones.png');
+			this.load.image('background3','assets/Environnement/_thorns.png');
+			this.load.image('trigger','assets/Environnement/noir.png');
 			this.load.image('chest','assets/Environnement/chest.png');
 			this.load.image('box','assets/Environnement/noir.png');
 			this.load.image('door','assets/Environnement/door.png');
@@ -70,7 +71,7 @@ class test extends Phaser.Scene {
 
 	create() {
 		/*Variables 'publiques' - modifier leurs valeurs pour tester différents paramètres du jeu*/
-			this.speed = 400; //Vitesse du joueur
+			this.speed = 300; //Vitesse du joueur
 			this.health = 6;  //Vie du joueur
 			this.maxHealth = 6;  //Vie maximal du joueur
 			this.shoot = 400;
@@ -79,9 +80,13 @@ class test extends Phaser.Scene {
 			this.openInventory = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I); //Inventaire
 			this.isInventoryOpen = 0; // - booléen_inventaire: 0 = fermé / 1 = ouvert
 			this.delayBullet = 3000;
+			this.isGameOver = 0;
 
+		
 		this.add.image(0,0,'background').setOrigin(0,0);
-
+		this.add.image(0,0,'background2').setOrigin(0,0);
+		this.add.image(0,0,'background3').setOrigin(0,0);
+		
 		//Caméra & Joueur
 		    
 		    this.physics.world.setBounds(0, 0, 6250, 3000);
@@ -207,27 +212,26 @@ class test extends Phaser.Scene {
 					repeat: -1
 				});
 
-		    this.ennemiA.children.iterate(function (ennemiA) {
-		        ennemiA.health = Phaser.Math.Between(2, 5);			       
-		    });
+			    this.ennemiA.children.iterate(function (ennemiA) {
+			        ennemiA.health = Phaser.Math.Between(8, 10);			       
+			    });
 
-		    var tweenY = this.tweens.add({
-		      	targets: [ this.depY1, this.depY2, this.depY3,this.depY4, this.depY5, this.depY6, this.depY7, this.depY8, this.depY9, this.depY10 ],
-		        y: '+=200',
-		        ease: 'Linear',
-		        yoyo: true,
-		        repeat: -1
-		    });
+			    var tweenY = this.tweens.add({
+			      	targets: [ this.depY1, this.depY2, this.depY3,this.depY4, this.depY5, this.depY6, this.depY7, this.depY8, this.depY9, this.depY10 ],
+			        y: '+=200',
+			        ease: 'Linear',
+			        yoyo: true,
+			        repeat: -1
+			    });
 
-		    var tweenX = this.tweens.add({
-		      	targets: [ this.depX1, this.depX2, this.depX3,this.depX4, this.depX5, this.depX6, this.depX7, this.depX8, this.depX9, this.depX10 ],
-		        x: '+=200',
-		        ease: 'Linear',
-		        yoyo: true,
-		        repeat: -1
-		    });
+			    var tweenX = this.tweens.add({
+			      	targets: [ this.depX1, this.depX2, this.depX3,this.depX4, this.depX5, this.depX6, this.depX7, this.depX8, this.depX9, this.depX10 ],
+			        x: '+=200',
+			        ease: 'Linear',
+			        yoyo: true,
+			        repeat: -1
+			    });
 
-		   
 		    //EnnemiB
 				this.ennemiB = this.physics.add.group({
 			        key: 'ennemiB',	
@@ -237,9 +241,9 @@ class test extends Phaser.Scene {
 			   	//Zone 6
 			   	this.ennemiB.create(5810,400,'ennemiB');
  
-		    this.ennemiB.children.iterate(function (ennemiB) {
-		        ennemiB.health = Phaser.Math.Between(10, 15);			        
-		    });
+			    this.ennemiB.children.iterate(function (ennemiB) {
+			        ennemiB.health = Phaser.Math.Between(28, 30);			        
+			    });
 
 		/*Texte*/
 			//Clef
@@ -273,7 +277,7 @@ class test extends Phaser.Scene {
 			//System de tir - Joueur
 				this.input.on('pointermove', function (pointer)
 			    {
-			    	this.cursor.setVisible(true).setPosition(pointer.x, pointer.y).setScrollFactor(0);
+			    	this.cursor.setVisible(true).setPosition(pointer.x, pointer.y).setScrollFactor(0).setScale(0.5);
 			    }, this);
 
 			    this.input.on('pointerdown', function (pointer)
@@ -291,6 +295,12 @@ class test extends Phaser.Scene {
 						        this.ammo--;
 					    	}
 			    		}
+
+			    		if (this.isGameOver == 1) 
+						{
+							
+							this.scene.restart();
+						}
 
 
 			    	}
@@ -576,7 +586,6 @@ class test extends Phaser.Scene {
 				{
 					//this.player.anims.play('idleR', true);	
 				}
-				
 			}
 
 			if (this.keys.Z.isDown)
@@ -591,8 +600,6 @@ class test extends Phaser.Scene {
 			else
 			{
 				this.player.setVelocityY(0);
-
-				
 			}
 
 		//Rechargement
