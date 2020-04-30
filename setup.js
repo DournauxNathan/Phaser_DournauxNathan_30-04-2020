@@ -5,7 +5,7 @@ const config = {
   backgroundColor: "#000",
   parent: "game-container",
   pixelArt: true,
-  scene: [tuto, test],
+  scene: [tuto, test,end],
   physics: {
     default: "arcade",
     arcade: {

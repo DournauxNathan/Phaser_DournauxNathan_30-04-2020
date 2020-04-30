@@ -82,11 +82,11 @@ class tuto extends Phaser.Scene {
 
 		//Caméra & Joueur
 		    
-		    this.physics.world.setBounds(0, 0, 3200, 600);
+		    this.physics.world.setBounds(0, 0, 2500, 600);
 	 	   	this.player = this.physics.add.sprite(100,510,'idleR');
 	   		this.player.setCollideWorldBounds(true);
 	   		this.groupeBullets = this.physics.add.group();
-	   		this.cameras.main.setBounds(0, 0, 3200 , 600, this.player);
+	   		this.cameras.main.setBounds(0, 0, 2500 , 600, this.player);
 			this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
 
 			this.nKill = 0;
@@ -119,16 +119,18 @@ class tuto extends Phaser.Scene {
 			
 			this.cursor = this.add.image(0, 0, 'cursor').setVisible(false);
 
-			//Collectibles
-		    this.nSoul = 0;
+		this.door = this.physics.add.sprite(2200, 410, 'door').setImmovable(true).setScale(1.5);
+		
+		//Collectibles
+	    this.nSoul = 0;
 
-			this.ammo = 6;
+		this.ammo = 6;
 
-			this.nAmmo = 100;
-			this.nKeys = 0;
+		this.nAmmo = 100;
+		this.nKeys = 0;
 
-			this.isUsable = 0;
-			this.objUpgrade = this.physics.add.sprite(2000,450,'objUp');
+		this.isUsable = 0;
+		this.objUpgrade = this.physics.add.sprite(1625,300,'objUp');
 
 		//EnnemiA
 				this.ennemiA = this.physics.add.group({
@@ -148,9 +150,9 @@ class tuto extends Phaser.Scene {
 				this.soulText = this.add.text(130, 85, ' ', { fontSize: '35px', fill: '#fff' }).setScrollFactor(0);
 				this.soulText.setText('' + this.nSoul);
 
-
 		this.physics.add.overlap(this.groupeBullets, this.ennemiA, hitEnnemi, null,this);
-				this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
+		this.physics.add.overlap(this.objUpgrade, this.player, collectUpgrade, null,this);
+		this.physics.add.collider(this.door, this.player, openDoor, null,this);
 		
 		//System de tir - Joueur
 				this.input.on('pointermove', function (pointer)
@@ -178,6 +180,13 @@ class tuto extends Phaser.Scene {
 			    	}
 			    }, this);
 
+			    
+		//Collision entre le joueur et un objet - porte - condition avoir au moins une clef
+			function openDoor()
+			{
+				this.scene.start('test');
+			}
+
 
 		//Collision entre une balle et un ennemi - A
 			function hitEnnemi(bullet, ennemiA) 
@@ -192,66 +201,30 @@ class tuto extends Phaser.Scene {
 				}
 			}
 
-			//Droite et gauche
-			if (this.player.x >= 100) 
+			//Collision entre le joueur et un collectible - Amélioration
+			function collectUpgrade()
 			{
-				this.moveText = this.add.text(100, 430,'Appuyer sur Z,Q,S,D\n pour te déplacer');
-
-			}
-			 
-			if (this.player.x >= 300) 
-			{
-				this.runText = this.add.text(350, 410,' Attention voilà un démon !\n Visée avec la souris et appuyer sur Clic- Gauche pour tirer');
+				this.isUsable = 1;
+				this.objUpgrade.destroy();
+				this.cornerObj.setVisible(true);
 			}
 
-			if (this.player.x >= 550) 
-			{
-				this.fireText = this.add.text(600, 410,' Tu n as plus de balle dans ton chargeur\n  Appuie sur R pour recharger');
-			}
-
-			if (this.player.x >= 1200) 
-			{
-				this.jumpText = this.add.text(1300, 410,' Voila un objet\n Appuie sur Espace pour lutiliser');
-			}
-
-			if (this.player.y < 350) 
-			{
-				this.dJumpText = this.add.text(1140, 120,'Te voilà fin prêt pour affronter l enfer\n  Trouve un moyen d ouvrir le coffre pour gagner !');
-			}
-				//Collision entre le joueur et un collectible - Amélioration
-				function collectUpgrade()
-				{
-					this.isUsable = 1;
-					this.objUpgrade.destroy();
-					this.cornerObj.setVisible(true);
-				}
 		this.arrow = this.add.text(100,100,'->', { fontSize: '35px', fill: '#fff' });
-		this.moveText = this.add.text(100, 430,'Appuyer sur Z,Q,S,D\n pour te déplacer').setVisible(false);
-		this.runText = this.add.text(350, 410,' Attention voilà un démon !\n Visée avec la souris et appuyer sur Clic- Gauche pour tirer').setVisible(false);
-		this.fireText = this.add.text(600, 410,' Tu n as plus de balle dans ton chargeur\n  Appuie sur R pour recharger').setVisible(false);
-		this.jumpText = this.add.text(1300, 410,' Voila un objet\n Appuie sur Espace pour lutiliser').setVisible(false);
-		this.dJumpText = this.add.text(1140, 120,'Te voilà fin prêt pour affronter l enfer\n  Trouve un moyen d ouvrir le coffre pour gagner !').setVisible(false);
+		this.moveText = this.add.text(100, 430,'Appuyer sur Z,Q,S,D\n pour te déplacer');
+		this.runText = this.add.text(650, 430,'                  Attention voilà un démon !\nVisée avec la souris et appuyer sur Clic- Gauche pour tirer').setVisible(false);
+		this.fireText = this.add.text(750, 380,' Tu n as plus de balle dans ton chargeur\n       Appuie sur R pour recharger').setVisible(false);
+		this.jumpText = this.add.text(1500, 410,'      Voila un objet\nAttrape le et appuie sur\n  Espace pour lutiliser').setVisible(false);
+		this.dJumpText = this.add.text(1800, 250,'Te voilà fin prêt pour affronter l enfer\n  Trouve un moyen d ouvrir le coffre pour gagner !').setVisible(false);
 	}
 
 	update() {
-		/*Tutoriel*/
-			//Droite et gauche
 			
-				
-			
-//Droite et gauche
-			if (this.player.x >= 100) 
-			{
-				this.moveText.setVisible(true);
-
-			}
-			 
-			if (this.player.x >= 300) 
+			if (this.player.x >= 800) 
 			{
 				this.runText.setVisible(true);
 			}
 
-			if (this.player.x >= 550) 
+			if (this.nKill == 1) 
 			{
 				this.fireText.setVisible(true);
 			}
@@ -261,7 +234,7 @@ class tuto extends Phaser.Scene {
 				this.jumpText.setVisible(true);
 			}
 
-			if (this.player.y < 350) 
+			if (this.player.x >= 1600) 
 			{
 				this.dJumpText.setVisible(true);
 			}
