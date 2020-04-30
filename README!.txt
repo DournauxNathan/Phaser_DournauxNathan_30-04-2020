@@ -6,7 +6,7 @@ Il y a à votre disposition un document 'Fonctionnalités' qui regroupe l'ensemb
 
 Après avoir tester le prototype et que vous constater qu'il manque des fonctionnalités vous pourez vous référer à ce documents.
 
-Il y a également un fichier 'Documentation' qui regroupe les essais d'un synthaxe et nomenclature pour le code afin de structurée et garder une cohérence et une lisibilité.
+
 
 
 
