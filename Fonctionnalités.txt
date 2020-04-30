@@ -1,0 +1,47 @@
+FONCTIONNALITÉS
+
+- Ennemis ayant un comportement à l’écran et que l’on peut faire disparaître (par une
+action, violente ou non). Ces ennemis doivent pouvoir faire perdre de la vie :
+
+	Les comportements linéaires sur les axes X et Y.
+	Si le joueur les touche, il perd de la vie.
+	Pour faire disparaître les ennemis, il faut le les tuée en tirant.
+
+- La disparition des ennemis entraîne l’apparition d’items collectibles (drops), que l’on
+peut ramasser pour un usage ultérieur : 
+
+	Lorsque les ennemisA disparaissent drop  2 collectibles (munitions & monnaie[des âmes, INGAME]).
+	Lorsque les ennemisB disparaissent drop  2 collectibles (clef & vie).
+	L'usage ultérieur n'est pas traitée.
+
+- Certains items collectibles sont accessibles directement dans l’espace de jeu, sans
+avoir été préalablement droppés par un ennemi :
+
+	Un collectible est disposée dans l'espace de jeu. 
+	Pour y accèder il faut ouvrir une porte et donc avoir une clef.
+
+- Les collectibles enrichissent un inventaire, une barre de vie, un compte monétaire :
+
+	Les collectibles 'clef' enrichissent un compteur de clef.
+	Les collectibles 'monnaie' enrichissent un compte monétaire.
+	L'inventaire n'est pas traitée.
+
+- Au moins deux des items permettent de débloquer une nouvelle capacité :
+
+	Ce collectible permet d'augmenter la vitesse des balles lorsque l'on tire.
+
+- Au moins un item d’une part, et une résolution d’action d’autre part (neutralisation de
+monstre, déplacement d’objet), doivent permettre d’ouvrir un passage d’abord fermé : 
+	
+	L'espace de jeu est bloqué par des 'lockers'.
+	Ils disparaissent en fonction du nombre d'ennemis tuées.
+	Le collectible 'clef' permet d'ouvrir des portes et des coffres.
+	A côté du coffre, se trouve une boite noir qui ilustre le déplacement d'objet. (n'illustre pas l'ouverture d'un passage fermé)
+
+- La navigation au sein d’un niveau ou d’un donjon se fait par scrolling :
+
+	La caméra suit le joueur et permet donc un déplacement en scrolling.
+
+- La navigation entre deux “niveaux” ou donjons se fait en changeant de scène :
+	
+	La navigation entre le tutoriel, un niveau de jeu et l'écran de fin s'oppère en changeant de scènes.
